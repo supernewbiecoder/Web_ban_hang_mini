@@ -1,3 +1,2 @@
 class MongoCollections:
-    users = 'users'
-    products = 'products'
+    user = 'user'

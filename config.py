@@ -12,7 +12,6 @@ class Config:
     PORT = int(os.getenv("PORT", 8000))
 
     SECRET_KEY = os.getenv("SECRET_KEY")
-    JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 
     MONGO_URI = os.getenv("MONGO_URI")
     MONGO_DB_NAME = os.getenv("MONGO_DB_NAME")
@@ -20,3 +19,4 @@ class Config:
     CORS_ORIGINS = os.getenv("CORS_ORIGINS", "").split(",")
 
     LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
+    EXPIRATION_JWT = 3600

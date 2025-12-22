@@ -1,3 +1,6 @@
 sanic == 25.3
 python-dotenv
 pymongo
+PyJWT
+passlib
+jsonschema
