@@ -8,7 +8,7 @@ def check_token(request):
     """Kiểm tra và decode JWT token"""
     token = request.headers.get("Authorization", "")
     if not token.startswith("Bearer "):
-        return False, "Missing or invalid token format"
+        return False, "Thiếu hoặc là format token không hợp lệ"
 
     token = token.split(" ", 1)[1].strip()
 
@@ -46,19 +46,25 @@ def require_role(*roles):
             user_payload = getattr(request.ctx, "user", None)
             
             if not user_payload:
-                return json({"error": "Unauthorized"}, status=401)
+                return json({"error": "Không có quyền truy cập"}, status=401)
 
             # Lấy role từ payload
             user_role = user_payload.get("role")
             
             # Kiểm tra nếu không có role trong payload
             if user_role is None:
-                return json({"error": "User role not found in token"}, status=403)
+                return json({"error": "Không tìm thấy role trong token"}, status=403)
 
             # Kiểm tra role có trong danh sách cho phép không
             if user_role not in roles:
+                # Cải thiện định dạng thông báo
+                if len(roles) == 1:
+                    required_role = f"'{roles[0]}'"
+                else:
+                    required_role = ", ".join([f"'{r}'" for r in roles])
+                
                 return json({
-                    "error": f"Forbidden: Required roles {roles}, but user has {user_role}"
+                    "error": f"Không đủ quyền truy cập. Yêu cầu role: {required_role}. Role hiện tại: '{user_role}'"
                 }, status=403)
 
             return await handler(request, *args, **kwargs)
