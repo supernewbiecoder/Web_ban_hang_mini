@@ -5,10 +5,10 @@ from backend.utils.jwt import generate_jwt
 from sanic import Blueprint
 from sanic.response import json
 from jsonschema import validate, ValidationError
-
+from main import _db
 auth = Blueprint('auth', url_prefix='/auth')
 
-_db = MongoDB()
+
 _user_repo = UserRepository(_db)
 
 @auth.post('/register')

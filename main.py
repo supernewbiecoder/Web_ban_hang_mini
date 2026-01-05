@@ -1,3 +1,4 @@
+from backend.databases.mongodb import MongoDB
 from sanic import Sanic
 from sanic.response import text
 from config import Config
@@ -6,6 +7,7 @@ app = Sanic(Config.APP_NAME)
 
 app.config.DEBUG = Config.DEBUG
 app.config.SECRET = Config.SECRET_KEY
+_db = MongoDB()
 app.blueprint(api)
 
 @app.get("/")
