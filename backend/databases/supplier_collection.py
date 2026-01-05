@@ -44,7 +44,11 @@ class SupplierRepository:
             ValueError: Nếu supplier đã tồn tại
         """
         self._validate_data(supplier_data, create_supplier_schema) #Bad request _400 bao giờ tạo API route thì chuyen sang đấy sau
-        
+
+        now_iso = datetime.now().isoformat()
+        supplier_data.setdefault("created_at", now_iso)
+        supplier_data.setdefault("updated_at", now_iso)
+
         try:
             result = self.supplier.insert_one(supplier_data)
             return result.inserted_id
@@ -82,7 +86,9 @@ class SupplierRepository:
             ValidationError: Nếu dữ liệu không hợp lệ
         """
         self._validate_data(update_data, update_supplier_schema) #Bad request _400 bao giờ tạo API route thì chuyển sang đấy sau
-        
+
+        update_data["updated_at"] = datetime.now().isoformat()
+
         result = self.supplier.update_one(
             {"code": code},
             {"$set": update_data}

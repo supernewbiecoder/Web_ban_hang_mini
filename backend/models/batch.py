@@ -26,13 +26,16 @@ class Batch:
         self.status = status
 
     def to_dict(self) -> Dict:
+        def _dt(value):
+            return value.isoformat() if isinstance(value, datetime) else value
+
         return {
             "_id": self._id,
             "batch_code": self.batch_code,
             "product_id": self.product_id,
-            "manufacture_date": self.manufacture_date,
-            "expiry_date": self.expiry_date,
-            "import_date": self.import_date,
+            "manufacture_date": _dt(self.manufacture_date),
+            "expiry_date": _dt(self.expiry_date),
+            "import_date": _dt(self.import_date),
             "import_price": self.import_price,
             "quantity": self.quantity,
             "status": self.status,

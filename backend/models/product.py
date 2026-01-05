@@ -28,6 +28,9 @@ class Product:
         self.updated_at = updated_at
 
     def to_dict(self) -> Dict:
+        def _dt(value):
+            return value.isoformat() if isinstance(value, datetime) else value
+
         return {
             "_id": self._id,
             "code": self.code,
@@ -37,8 +40,8 @@ class Product:
             "supplier_id": self.supplier_id,
             "description": self.description,
             "status": self.status,
-            "created_at": self.created_at,
-            "updated_at": self.updated_at,
+            "created_at": _dt(self.created_at),
+            "updated_at": _dt(self.updated_at),
         }
 
     @staticmethod

@@ -35,8 +35,9 @@ class ProductRepository:
         """Insert a new product document."""
         self._validate_data(product_data, create_product_schema)
 
-        product_data.setdefault("created_at", datetime.now())
-        product_data.setdefault("updated_at", datetime.now())
+        now_iso = datetime.now().isoformat()
+        product_data.setdefault("created_at", now_iso)
+        product_data.setdefault("updated_at", now_iso)
 
         try:
             result = self.product.insert_one(product_data)
@@ -63,7 +64,7 @@ class ProductRepository:
     def update_product(self, code: str, update_data: Dict) -> bool:
         """Update product fields."""
         self._validate_data(update_data, update_product_schema)
-        update_data["updated_at"] = datetime.now()
+        update_data["updated_at"] = datetime.now().isoformat()
 
         result = self.product.update_one({"code": code}, {"$set": update_data})
         return result.modified_count > 0

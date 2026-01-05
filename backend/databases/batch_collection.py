@@ -1,3 +1,4 @@
+from bson import ObjectId
 from jsonschema import validate, ValidationError
 from backend.constants.mongodb_constants import MongoCollections
 from backend.databases.mongodb import MongoDB
@@ -49,7 +50,7 @@ class BatchRepository:
         return list(self.batch.find())
     def get_batches_by_Object_id(self, _id):
         """Lay batch theo _id"""
-        return self.batch.find_one({"_id": _id})
+        return self.batch.find_one({"_id": ObjectId(_id)})
     #-----------------------------------------------------------
     #UPDATE BATCH
     #-----------------------------------------------------------
