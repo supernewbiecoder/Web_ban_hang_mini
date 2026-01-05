@@ -4,14 +4,14 @@ from backend.databases.mongodb import MongoDB
 from typing import Dict
 from pymongo.errors import DuplicateKeyError
 from backend.models.batch import create_batch_schema, update_batch_schema
-class BatchReposistory:
+class BatchRepository:
     def __init__(self, db: MongoDB):
         self.batch = db.get_collection(MongoCollections.batch)
         self._ensure_indexes()
     def _ensure_indexes(self):
         """Tao cac chi muc cho collection"""
         try:
-            self.batch.create.index("batch_id",unique=True)
+            self.batch.create_index("batch_code",unique=True)
         except Exception:
             pass
     def _validate_data(self, data:Dict, schema:Dict)->None:

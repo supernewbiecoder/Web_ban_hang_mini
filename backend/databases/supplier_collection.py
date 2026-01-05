@@ -116,7 +116,9 @@ class SupplierRepository:
         
         result = self.supplier.update_one(
             {"code": code},
-            {"$set": {"supply_end_date": end_date}},
-            {"$set": {"status": "inactive"}}
+            {"$set": {
+            "supply_end_date": end_date,
+            "status": "inactive"
+        }}
         )
         return result.modified_count > 0
