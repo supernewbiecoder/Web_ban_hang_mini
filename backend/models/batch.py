@@ -1,58 +1,91 @@
-from typing import Dict, List
-
-from backend.models import supplier
-from backend.models.product import Product, create_product_schema
+from datetime import datetime
+from typing import Dict, Optional
 
 
 class Batch:
-    def __init__(self, batch_id: str, supplier_id: str, product: Product, quantity: int, manufacture_date: str, expiry_date: str):
-        self.batch_id = batch_id
-        self.supplier = supplier
-        self.product = product
-        self.quantity=quantity
+    def __init__(
+        self,
+        batch_code: str,
+        product_id: str,
+        manufacture_date: datetime,
+        expiry_date: datetime,
+        import_date: datetime,
+        import_price: float,
+        quantity: int,
+        status: str = "available",
+        _id: Optional[str] = None,
+    ):
+        self._id = _id
+        self.batch_code = batch_code
+        self.product_id = product_id
         self.manufacture_date = manufacture_date
         self.expiry_date = expiry_date
+        self.import_date = import_date
+        self.import_price = import_price
+        self.quantity = quantity
+        self.status = status
+
     def to_dict(self) -> Dict:
         return {
-            "batch_id": self.batch_id,
-            "supplier": self.supplier,
-            "product": self.product.to_dict(),
-            "quantity": self.quantity,
+            "_id": self._id,
+            "batch_code": self.batch_code,
+            "product_id": self.product_id,
             "manufacture_date": self.manufacture_date,
             "expiry_date": self.expiry_date,
+            "import_date": self.import_date,
+            "import_price": self.import_price,
+            "quantity": self.quantity,
+            "status": self.status,
         }
+
     @staticmethod
     def from_dict(data: Dict) -> "Batch":
         return Batch(
-            batch_id=data.get("batch_id"),
-            supplier=data.get("supplier"),
-            product=Product.from_dict(data.get("product")),
-            quantity=data.get("quantity"),
+            _id=data.get("_id"),
+            batch_code=data.get("batch_code"),
+            product_id=data.get("product_id"),
             manufacture_date=data.get("manufacture_date"),
             expiry_date=data.get("expiry_date"),
+            import_date=data.get("import_date"),
+            import_price=data.get("import_price"),
+            quantity=data.get("quantity"),
+            status=data.get("status", "available"),
         )
-# Schema validation cho batch
+
+
 create_batch_schema = {
     "type": "object",
-    "properties":{
-        "batch_id": {"type": "string", "minLength": 1},
-        "supplier": {"type": "string", "minLength": 1},
-        "product": create_product_schema,
+    "properties": {
+        "batch_code": {"type": "string", "minLength": 1},
+        "product_id": {"type": "string", "minLength": 1},
+        "manufacture_date": {"type": "string", "format": "date-time"},
+        "expiry_date": {"type": "string", "format": "date-time"},
+        "import_date": {"type": "string", "format": "date-time"},
+        "import_price": {"type": "number", "minimum": 0},
         "quantity": {"type": "integer", "minimum": 0},
-        "manufacture_date": {"type": "string", "format": "date"},
-        "expiry_date": {"type": "string", "format": "date"},
+        "status": {"type": "string", "enum": ["available", "unavailable"]},
     },
-    "required": ["batch_id", "product", "quantity", "manufacture_date", "expiry_date"]
+    "required": [
+        "batch_code",
+        "product_id",
+        "manufacture_date",
+        "expiry_date",
+        "import_date",
+        "import_price",
+        "quantity",
+    ],
 }
 
 update_batch_schema = {
     "type": "object",
-    "properties":{
-        "batch_id": {"type": "string", "minLength": 1},
-        "supplier": {"type": "string", "minLength": 1},
-        "product": create_product_schema,
+    "properties": {
+        "batch_code": {"type": "string", "minLength": 1},
+        "product_id": {"type": "string", "minLength": 1},
+        "manufacture_date": {"type": "string", "format": "date-time"},
+        "expiry_date": {"type": "string", "format": "date-time"},
+        "import_date": {"type": "string", "format": "date-time"},
+        "import_price": {"type": "number", "minimum": 0},
         "quantity": {"type": "integer", "minimum": 0},
-        "manufacture_date": {"type": "string", "format": "date"},
-        "expiry_date": {"type": "string", "format": "date"},
-    }
+        "status": {"type": "string", "enum": ["available", "unavailable"]},
+    },
 }

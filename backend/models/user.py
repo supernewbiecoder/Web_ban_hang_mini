@@ -21,5 +21,5 @@ create_user_schema={
         "password": {"type": "string"},
         "role": {"type": "string"}
     },
-    'required' : ['username', 'password']
+    'required' : ['username', 'password', 'role']
 }

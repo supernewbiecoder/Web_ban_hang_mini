@@ -1,116 +1,83 @@
 from datetime import datetime
-from typing import List, Dict, Optional
+from typing import Dict, Optional
 
 
 class Supplier:
     def __init__(
         self,
+        code: str,
         name: str,
-        supplier_id: str,
-        contact_method: str,
-        products_imported: List[str],
-        supply_start_date: datetime,
-        supply_end_date: Optional[datetime] = None,
-        batches_per_product: Dict[str, int] = None,
-        batch_references: List[str] = None,
+        phone: str,
+        email: str,
+        address: str,
+        status: str = "active",
+        created_at: Optional[datetime] = None,
+        updated_at: Optional[datetime] = None,
+        _id: Optional[str] = None,
     ):
-        """
-        Tạo một supplier mới
-        
-        Args:
-            name: Tên của supplier
-            supplier_id: ID của supplier
-            contact_method: Phương thức liên lạc (email, phone, etc.)
-            products_imported: Danh sách các sản phẩm đã nhập
-            supply_start_date: Ngày bắt đầu cung cấp
-            supply_end_date: Ngày kết thúc cung cấp (optional)
-            batches_per_product: Tổng số lô cho từng sản phẩm đã nhập
-            batch_references: Tham chiếu tới từng lô
-        """
+        self._id = _id
+        self.code = code
         self.name = name
-        self.supplier_id = supplier_id
-        self.contact_method = contact_method
-        self.products_imported = products_imported
-        self.supply_start_date = supply_start_date
-        self.supply_end_date = supply_end_date
-        self.batches_per_product = batches_per_product or {}
-        self.batch_references = batch_references or []
+        self.phone = phone
+        self.email = email
+        self.address = address
+        self.status = status
+        self.created_at = created_at
+        self.updated_at = updated_at
 
     def to_dict(self) -> Dict:
-        """Chuyển đổi supplier thành dictionary"""
         return {
+            "_id": self._id,
+            "code": self.code,
             "name": self.name,
-            "supplier_id": self.supplier_id,
-            "contact_method": self.contact_method,
-            "products_imported": self.products_imported,
-            "supply_start_date": self.supply_start_date,
-            "supply_end_date": self.supply_end_date,
-            "batches_per_product": self.batches_per_product,
-            "batch_references": self.batch_references,
+            "phone": self.phone,
+            "email": self.email,
+            "address": self.address,
+            "status": self.status,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
         }
 
     @staticmethod
     def from_dict(data: Dict) -> "Supplier":
-        """Tạo Supplier từ dictionary"""
         return Supplier(
+            _id=data.get("_id"),
+            code=data.get("code"),
             name=data.get("name"),
-            supplier_id=data.get("supplier_id"),
-            contact_method=data.get("contact_method"),
-            products_imported=data.get("products_imported", []),
-            supply_start_date=data.get("supply_start_date"),
-            supply_end_date=data.get("supply_end_date"),
-            batches_per_product=data.get("batches_per_product", {}),
-            batch_references=data.get("batch_references", []),
+            phone=data.get("phone"),
+            email=data.get("email"),
+            address=data.get("address"),
+            status=data.get("status", "active"),
+            created_at=data.get("created_at"),
+            updated_at=data.get("updated_at"),
         )
 
 
-# Schema validation cho supplier
 create_supplier_schema = {
-    'type': 'object',
-    'properties': {
-        'name': {'type': 'string', 'minLength': 1},
-        'supplier_id': {'type': 'string', 'minLength': 1},
-        'contact_method': {'type': 'string', 'minLength': 1},
-        'products_imported': {
-            'type': 'array',
-            'items': {'type': 'string'},
-            'default': []
-        },
-        'supply_start_date': {'type': 'string'},  # ISO format datetime
-        'supply_end_date': {'type': ['string', 'null']},  # Optional
-        'batches_per_product': {
-            'type': 'object',
-            'additionalProperties': {'type': 'integer', 'minimum': 0},
-            'default': {}
-        },
-        'batch_references': {
-            'type': 'array',
-            'items': {'type': 'string'},
-            'default': []
-        }
+    "type": "object",
+    "properties": {
+        "code": {"type": "string", "minLength": 1},
+        "name": {"type": "string", "minLength": 1},
+        "phone": {"type": "string", "minLength": 1},
+        "email": {"type": "string", "format": "email"},
+        "address": {"type": "string", "minLength": 1},
+        "status": {"type": "string", "enum": ["active", "inactive"]},
+        "created_at": {"type": "string", "format": "date-time"},
+        "updated_at": {"type": "string", "format": "date-time"},
     },
-    'required': ['name', 'supplier_id', 'contact_method', 'supply_start_date']
+    "required": ["code", "name", "phone", "email", "address"],
 }
 
 update_supplier_schema = {
-    'type': 'object',
-    'properties': {
-        'name': {'type': 'string', 'minLength': 1},
-        'supplier_id': {'type': 'string', 'minLength': 1},
-        'contact_method': {'type': 'string', 'minLength': 1},
-        'products_imported': {
-            'type': 'array',
-            'items': {'type': 'string'}
-        },
-        'supply_start_date': {'type': 'string'},
-        'supply_end_date': {'type': ['string', 'null']},
-        'batches_per_product': {
-            'type': 'object',
-            'additionalProperties': {'type': 'integer', 'minimum': 0}
-        },
-        'batch_references': {
-            'type': 'array',
-            'items': {'type': 'string'}
-        }
-    }
+    "type": "object",
+    "properties": {
+        "code": {"type": "string", "minLength": 1},
+        "name": {"type": "string", "minLength": 1},
+        "phone": {"type": "string", "minLength": 1},
+        "email": {"type": "string", "format": "email"},
+        "address": {"type": "string", "minLength": 1},
+        "status": {"type": "string", "enum": ["active", "inactive"]},
+        "created_at": {"type": "string", "format": "date-time"},
+        "updated_at": {"type": "string", "format": "date-time"},
+    },
 }
