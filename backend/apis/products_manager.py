@@ -1,7 +1,8 @@
 from backend.databases.mongodb import MongoDB
 from backend.decorators.auth import token_required,require_role
 from sanic import Blueprint, text
-from main import _db
+
+_db = MongoDB()
 products = Blueprint('products_manager', url_prefix='/products')
 
 

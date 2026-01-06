@@ -1,0 +1,38 @@
+PRODUCTS_DATA = [
+    {
+        "code": "PRD001",
+        "name": "Sản phẩm 1",
+        "category": "Điện tử",
+        "unit": "cái",
+        "description": "Mô tả sản phẩm 1",
+        "supplier_id": "SUP001",
+        "status": "active",
+    },
+    {
+        "code": "PRD002",
+        "name": "Sản phẩm 2",
+        "category": "Quần áo",
+        "unit": "bộ",
+        "description": "Mô tả sản phẩm 2",
+        "supplier_id": "SUP002",
+        "status": "active",
+    },
+    {
+        "code": "PRD003",
+        "name": "Sản phẩm 3",
+        "category": "Thực phẩm",
+        "unit": "kg",
+        "description": "Mô tả sản phẩm 3",
+        "supplier_id": "SUP003",
+        "status": "active",
+    },
+    {
+        "code": "PRD004",
+        "name": "Sản phẩm 4",
+        "category": "Điện tử",
+        "unit": "cái",
+        "description": "Mô tả sản phẩm 4",
+        "supplier_id": "SUP001",
+        "status": "active",
+    },
+]
