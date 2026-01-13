@@ -10,7 +10,10 @@ class Product:
         category: str,
         unit: str,
         supplier_id: str,
+        sell_price: float,
+        import_price: float,
         description: str = "",
+        total_quantity: int = 0,
         status: str = "active",
         created_at: Optional[datetime] = None,
         updated_at: Optional[datetime] = None,
@@ -22,7 +25,10 @@ class Product:
         self.category = category
         self.unit = unit
         self.supplier_id = supplier_id
+        self.sell_price = sell_price
+        self.import_price = import_price
         self.description = description
+        self.total_quantity = total_quantity
         self.status = status
         self.created_at = created_at
         self.updated_at = updated_at
@@ -38,7 +44,10 @@ class Product:
             "category": self.category,
             "unit": self.unit,
             "supplier_id": self.supplier_id,
+            "sell_price": self.sell_price,
+            "import_price": self.import_price,
             "description": self.description,
+            "total_quantity": self.total_quantity,
             "status": self.status,
             "created_at": _dt(self.created_at),
             "updated_at": _dt(self.updated_at),
@@ -53,7 +62,10 @@ class Product:
             category=data.get("category"),
             unit=data.get("unit"),
             supplier_id=data.get("supplier_id"),
+            sell_price=data.get("sell_price", 0),
+            import_price=data.get("import_price", 0),
             description=data.get("description", ""),
+            total_quantity=data.get("total_quantity", 0),
             status=data.get("status", "active"),
             created_at=data.get("created_at"),
             updated_at=data.get("updated_at"),
@@ -68,12 +80,15 @@ create_product_schema = {
         "category": {"type": "string", "minLength": 1},
         "unit": {"type": "string", "minLength": 1},
         "supplier_id": {"type": "string", "minLength": 1},
+        "sell_price": {"type": "number", "minimum": 0},
+        "import_price": {"type": "number", "minimum": 0},
         "description": {"type": "string"},
+        "total_quantity": {"type": "integer", "minimum": 0},
         "status": {"type": "string", "enum": [enum.Product_Status.ACTIVE, enum.Product_Status.INACTIVE]},
         "created_at": {"type": "string", "format": "date-time"},
         "updated_at": {"type": "string", "format": "date-time"},
     },
-    "required": ["code", "name", "category", "unit", "supplier_id"],
+    "required": ["code", "name", "category", "unit", "supplier_id", "sell_price", "import_price"],
 }
 
 update_product_schema = {
@@ -84,7 +99,10 @@ update_product_schema = {
         "category": {"type": "string", "minLength": 1},
         "unit": {"type": "string", "minLength": 1},
         "supplier_id": {"type": "string", "minLength": 1},
+        "sell_price": {"type": "number", "minimum": 0},
+        "import_price": {"type": "number", "minimum": 0},
         "description": {"type": "string"},
+        "total_quantity": {"type": "integer", "minimum": 0},
         "status": {"type": "string", "enum": [enum.Product_Status.ACTIVE, enum.Product_Status.INACTIVE]},
         "created_at": {"type": "string", "format": "date-time"},
         "updated_at": {"type": "string", "format": "date-time"},

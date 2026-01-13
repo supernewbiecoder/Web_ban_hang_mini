@@ -5,12 +5,10 @@ from backend.databases.mongodb import MongoDB
 from backend.databases.user_collection import UserRepository
 from backend.databases.supplier_collection import SupplierRepository
 from backend.databases.product_collection import ProductRepository
-from backend.databases.batch_collection import BatchRepository
 
 from backend.data.user_data import USERS_DATA
 from backend.data.supplier_data import SUPPLIERS_DATA
 from backend.data.product_data import PRODUCTS_DATA
-from backend.data.batch_data import BATCHES_DATA
 
 
 def seed_users(user_repo: UserRepository, users_data: list):
@@ -64,21 +62,7 @@ def seed_products(product_repo: ProductRepository, products_data: list):
     return count
 
 
-def seed_batches(batch_repo: BatchRepository, batches_data: list):
-    """Seed dữ liệu batches vào MongoDB"""
-    print("🔄 Seeding batches...")
-    count = 0
-    for batch_data in batches_data:
-        try:
-            batch_repo.insert_batch(batch_data)
-            count += 1
-            print(f"  ✓ Batch '{batch_data['batch_code']}' created")
-        except ValueError as e:
-            print(f"  ⚠️  {str(e)}")
-        except Exception as e:
-            print(f"  ❌ Error creating batch: {str(e)}")
-    print(f"✅ Seeded {count}/{len(batches_data)} batches\n")
-    return count
+
 
 
 def seed_all():
@@ -95,13 +79,11 @@ def seed_all():
         user_repo = UserRepository(db)
         supplier_repo = SupplierRepository(db)
         product_repo = ProductRepository(db)
-        batch_repo = BatchRepository(db)
 
         # Seed dữ liệu theo thứ tự
         total_users = seed_users(user_repo, USERS_DATA)
         total_suppliers = seed_suppliers(supplier_repo, SUPPLIERS_DATA)
         total_products = seed_products(product_repo, PRODUCTS_DATA)
-        total_batches = seed_batches(batch_repo, BATCHES_DATA)
 
         # Tóm tắt kết quả
         print("=" * 60)
@@ -110,7 +92,6 @@ def seed_all():
         print(f"Users:     {total_users}/{len(USERS_DATA)}")
         print(f"Suppliers: {total_suppliers}/{len(SUPPLIERS_DATA)}")
         print(f"Products:  {total_products}/{len(PRODUCTS_DATA)}")
-        print(f"Batches:   {total_batches}/{len(BATCHES_DATA)}")
         print("=" * 60)
         print("✅ DATABASE SEEDING COMPLETED")
         print("=" * 60 + "\n")

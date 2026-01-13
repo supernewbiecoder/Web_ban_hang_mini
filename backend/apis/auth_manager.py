@@ -5,7 +5,7 @@ from backend.utils.jwt import generate_jwt
 from sanic import Blueprint
 from sanic.response import json
 from jsonschema import validate, ValidationError
-
+from backend.constants import enum
 auth = Blueprint('auth', url_prefix='/auth')
 
 _db = MongoDB()
@@ -30,7 +30,7 @@ async def register(request):
     if _user_repo.get_user_by_username(username):
         return json({"error": "Username đã tồn tại"}, status=409)
     # Create user and insert
-    cur_user = User(username=username, password=password,role='user') #tạo bằng cái này thì chỉ tạo ra role user
+    cur_user = User(username=username, password=password,role=enum.User_Role.USER) #tạo bằng cái này thì chỉ tạo ra role user
     _user_repo.insert_user(cur_user.to_dict())
 
     return json({"message": "Đăng ký thành công"}, status=201)

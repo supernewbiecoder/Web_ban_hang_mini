@@ -60,7 +60,33 @@ class ProductRepository:
     def get_products_by_supplier(self, supplier_id: str) -> List[Dict]:
         """Fetch all products belonging to a supplier."""
         return list(self.product.find({"supplier_id": supplier_id}))
+    def get_products_by_filter(self, filter: Dict) -> List[Dict]:
+        """Find products by a flexible filter with optional pagination.
 
+        Args:
+            filter: dict các điều kiện tìm kiếm (VD: {"code": "PRD001", "status": "active"}).
+
+        Returns:
+            Danh sách sản phẩm match filter.
+        """
+
+        # Xây dựng điều kiện lọc từ dict; bỏ qua key None/"" và bỏ cả các trường start/end
+        query: Dict = {
+            k: v
+            for k, v in (filter or {}).items()
+            if v not in (None, "") and k not in ("start", "end", "supplier_name")
+        }
+
+        cursor = self.product.find(query)
+        start = filter.get("start")
+        end = filter.get("end")
+        # Nếu page/limit đều -1 thì không áp dụng skip/limit (trả toàn bộ)
+        if start is not None and end is not None:
+            start = max(start, 1)
+            end = max(end, 1)
+            cursor = cursor.skip(start).limit(end)
+        return list(cursor)
+    
     def update_product(self, code: str, update_data: Dict) -> bool:
         """Update product fields."""
         self._validate_data(update_data, update_product_schema)

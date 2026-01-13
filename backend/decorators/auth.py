@@ -1,6 +1,7 @@
 from functools import wraps
 from sanic.response import json
 from config import Config
+from backend.constants  import enum
 import jwt
 
 
@@ -32,6 +33,24 @@ def token_required(handler):
 
         # LƯU Ý: Lưu toàn bộ payload vào request.ctx.user, không chỉ username
         request.ctx.user = result  # Lưu cả dictionary payload
+        return await handler(request, *args, **kwargs)
+
+    return decorated_function
+
+
+def optional_auth(handler):
+    """Decorator cho phép truy cập mà không cần token, mặc định role là guest"""
+    @wraps(handler)
+    async def decorated_function(request, *args, **kwargs):
+        is_authenticated, result = check_token(request)
+
+        if is_authenticated:
+            # Có token hợp lệ: lưu payload
+            request.ctx.user = result
+        else:
+            # Không có token hoặc token không hợp lệ: set role mặc định là guest
+            request.ctx.user = {"role": enum.User_Role.GUEST, "username": None}
+        
         return await handler(request, *args, **kwargs)
 
     return decorated_function
