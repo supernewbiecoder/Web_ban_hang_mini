@@ -1,4 +1,3 @@
-from backend.databases.mongodb import MongoDB
 from sanic import Sanic
 from sanic.response import text
 from config import Config

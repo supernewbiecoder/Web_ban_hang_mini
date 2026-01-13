@@ -1,6 +1,6 @@
 from backend.databases.mongodb import MongoDB
 from backend.databases.user_collection import UserRepository
-from backend.models.user import User, create_user_schema
+from backend.models.user import User, register_user_schema, login_user_schema
 from backend.utils.jwt import generate_jwt
 from sanic import Blueprint
 from sanic.response import json
@@ -14,9 +14,9 @@ _user_repo = UserRepository(_db)
 @auth.post('/register')
 async def register(request):
     data = request.json or {}
-    # Validate payload
+    # Validate payload (username + password only)
     try:
-        validate(instance=data, schema=create_user_schema)
+        validate(instance=data, schema=register_user_schema)
     except ValidationError as e:
         return json({"error": "Payload không hợp lệ", "details": e.message}, status=400)
 
@@ -39,9 +39,9 @@ async def register(request):
 @auth.post('/login')
 async def login(request):
     data = request.json or {}
-    # Basic validation (reuse schema but we don't hash here)
+    # Basic validation for login
     try:
-        validate(instance=data, schema=create_user_schema)
+        validate(instance=data, schema=login_user_schema)
     except ValidationError as e:
         return json({"error": "Payload không hợp lệ", "details": e.message}, status=400)
 

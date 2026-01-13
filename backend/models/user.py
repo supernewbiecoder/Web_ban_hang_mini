@@ -1,4 +1,4 @@
-from passlib.hash import bcrypt
+from backend.constants import enum
 
 
 class User:
@@ -20,7 +20,26 @@ create_user_schema={
     'properties' : {
         "username": {"type": "string"},
         "password": {"type": "string"},
-        "role": {"type": "string"}
+        "role": {"type": "string", "enum": [enum.User_Role.ADMIN, enum.User_Role.USER, enum.User_Role.GUEST]},
     },
     'required' : ['username', 'password', 'role']
+}
+
+# Schemas specialized for auth flows
+register_user_schema={
+    'type':'object',
+    'properties' : {
+        "username": {"type": "string"},
+        "password": {"type": "string"}
+    },
+    'required' : ['username', 'password']
+}
+
+login_user_schema={
+    'type':'object',
+    'properties' : {
+        "username": {"type": "string"},
+        "password": {"type": "string"}
+    },
+    'required' : ['username', 'password']
 }

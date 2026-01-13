@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Dict, Optional
-
+from backend.constants import enum
 
 class Product:
     def __init__(
@@ -69,7 +69,7 @@ create_product_schema = {
         "unit": {"type": "string", "minLength": 1},
         "supplier_id": {"type": "string", "minLength": 1},
         "description": {"type": "string"},
-        "status": {"type": "string", "enum": ["active", "inactive"]},
+        "status": {"type": "string", "enum": [enum.Product_Status.ACTIVE, enum.Product_Status.INACTIVE]},
         "created_at": {"type": "string", "format": "date-time"},
         "updated_at": {"type": "string", "format": "date-time"},
     },
@@ -85,7 +85,7 @@ update_product_schema = {
         "unit": {"type": "string", "minLength": 1},
         "supplier_id": {"type": "string", "minLength": 1},
         "description": {"type": "string"},
-        "status": {"type": "string", "enum": ["active", "inactive"]},
+        "status": {"type": "string", "enum": [enum.Product_Status.ACTIVE, enum.Product_Status.INACTIVE]},
         "created_at": {"type": "string", "format": "date-time"},
         "updated_at": {"type": "string", "format": "date-time"},
     },
