@@ -10,3 +10,6 @@ class User_Role:
     ADMIN = "admin"
     USER = "user"
     GUEST = "guest"
+class User_Status:
+    ACTIVE = "active"
+    INACTIVE = "inactive"

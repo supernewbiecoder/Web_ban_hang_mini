@@ -16,7 +16,6 @@ class UserRepository:
 
     def insert_user(self, user_data):
         validate_data(user_data, create_user_schema)
-        # user_data = {**user_data, "password": bcrypt.hash(user_data["password"])} chưa muốn hash mật khẩu
         try:
             return self.user.insert_one(user_data)
         except DuplicateKeyError:
