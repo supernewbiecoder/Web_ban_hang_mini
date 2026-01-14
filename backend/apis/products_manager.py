@@ -8,7 +8,11 @@ from backend.views.admin_view import *
 from backend.views.user_view import *
 from backend.hooks.product_hook import *
 from backend.constants.product_filter import Product_filter
+from backend.models.product import create_product_schema
+from backend.utils.validation import validate_data
 from bson import ObjectId
+from jsonschema import ValidationError
+from datetime import datetime
 
 _db = MongoDB()
 product_repo = ProductRepository(_db)
@@ -55,3 +59,60 @@ async def bp_get_products(request):
     # Role không xác định
     else:
         return json({"error": "Không có quyền truy cập"}, status=403)
+
+@products.route('/', methods=['PUT'])
+@token_required
+@require_role(enum.User_Role.ADMIN)
+async def bp_create_product(request):
+    """
+    Tạo sản phẩm mới - Chỉ Admin
+    """
+    try:
+        # Lấy dữ liệu từ request body
+        product_data = request.json
+        if not product_data:
+            return json({"error": "Dữ liệu không hợp lệ"}, status=400)
+        
+        # Validate dữ liệu theo schema
+        try:
+            validate_data(product_data, create_product_schema)
+        except ValidationError as e:
+            return json({"error": str(e)}, status=400)
+        
+        # Kiểm tra supplier có tồn tại không
+        is_valid, result = is_supplier_exists(supplier_repo, product_data.get("supplier_id"))
+        if not is_valid:
+            return result
+        
+        # Kiểm tra sản phẩm chưa tồn tại
+        is_valid, error_response = is_product_not_duplicate(product_repo, product_data.get("code"))
+        if not is_valid:
+            return error_response
+        
+        # Set default values
+        product_data.setdefault("description", "")
+        product_data.setdefault("total_quantity", 0)
+        product_data.setdefault("status", enum.Product_Status.ACTIVE)
+        
+        # Lưu vào database
+        product_id = product_repo.insert_product(product_data)
+        
+        # Lấy lại thông tin sản phẩm vừa tạo
+        created_product = product_repo.get_product_by_object_id(product_id)
+        
+        # Serialize ObjectId
+        if created_product and "_id" in created_product:
+            created_product["_id"] = str(created_product["_id"])
+        
+        return json({
+            "success": "sản phẩm được thêm vào thành công",
+            "product": created_product
+        }, status=201)
+        
+    except ValidationError as e:
+        return json({"error": f"Dữ liệu không hợp lệ: {str(e)}"}, status=400)
+    except ValueError as e:
+        return json({"error": str(e)}, status=400)
+    except Exception as e:
+        return json({"error": f"Lỗi server: {str(e)}"}, status=500)
+

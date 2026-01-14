@@ -8,6 +8,7 @@ from pymongo.errors import DuplicateKeyError
 from backend.constants.mongodb_constants import MongoCollections
 from backend.databases.mongodb import MongoDB
 from backend.models.product import create_product_schema, update_product_schema
+from backend.utils.validation import validate_data
 
 
 class ProductRepository:
@@ -24,16 +25,10 @@ class ProductRepository:
         except Exception:
             pass
 
-    def _validate_data(self, data: Dict, schema: Dict) -> None:
-        """Validate payload with schema."""
-        try:
-            validate(instance=data, schema=schema)
-        except ValidationError as e:
-            raise ValidationError(f"Du lieu khong hop le: {e.message}")
 
     def insert_product(self, product_data: Dict):
         """Insert a new product document."""
-        self._validate_data(product_data, create_product_schema)
+        validate_data(product_data, create_product_schema)
 
         now_iso = datetime.now().isoformat()
         product_data.setdefault("created_at", now_iso)

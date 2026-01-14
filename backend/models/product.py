@@ -84,11 +84,24 @@ create_product_schema = {
         "import_price": {"type": "number", "minimum": 0},
         "description": {"type": "string"},
         "total_quantity": {"type": "integer", "minimum": 0},
-        "status": {"type": "string", "enum": [enum.Product_Status.ACTIVE, enum.Product_Status.INACTIVE]},
-        "created_at": {"type": "string", "format": "date-time"},
-        "updated_at": {"type": "string", "format": "date-time"},
+        "status": {
+            "type": "string",
+            "enum": [
+                enum.Product_Status.ACTIVE,
+                enum.Product_Status.INACTIVE
+            ]
+        }
     },
-    "required": ["code", "name", "category", "unit", "supplier_id", "sell_price", "import_price"],
+    "required": [
+        "code",
+        "name",
+        "category",
+        "unit",
+        "supplier_id",
+        "sell_price",
+        "import_price"
+    ],
+    "additionalProperties": False
 }
 
 update_product_schema = {
