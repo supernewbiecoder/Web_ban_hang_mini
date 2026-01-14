@@ -84,11 +84,14 @@ class ProductRepository:
     
     def update_product(self, code: str, update_data: Dict) -> bool:
         """Update product fields."""
-        self._validate_data(update_data, update_product_schema)
+        validate_data(update_data, update_product_schema)
+        if not update_data:
+            raise ValueError("Khong co truong nao de cap nhat")
+        
         update_data["updated_at"] = datetime.now().isoformat()
 
         result = self.product.update_one({"code": code}, {"$set": update_data})
-        return result.modified_count > 0
+        return result
 
     def delete_product(self, code: str) -> bool:
         """Delete a product if it is inactive."""
@@ -98,5 +101,5 @@ class ProductRepository:
         if product.get("status") == "active":
             raise ValueError("Khong the xoa product dang active")
 
-        result = self.product.delete_one({"code": code})
-        return result.deleted_count > 0
+        self.product.delete_one({"code": code})
+        return product

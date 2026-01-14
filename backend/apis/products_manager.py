@@ -19,7 +19,9 @@ product_repo = ProductRepository(_db)
 supplier_repo = SupplierRepository(_db)
 products = Blueprint('products_manager', url_prefix='/products')
 
-
+#--------------------------------------------------------------
+#Xem tất cả sản phẩm dựa theo thông tin đã lọc, 3 role khác nhau sẽ trả về kqua khác nhau
+#--------------------------------------------------------------
 @products.route('/')
 @optional_auth
 async def bp_get_products(request):
@@ -59,6 +61,10 @@ async def bp_get_products(request):
     # Role không xác định
     else:
         return json({"error": "Không có quyền truy cập"}, status=403)
+
+#--------------------------------------------------------------
+#Tạo sản phẩm
+#--------------------------------------------------------------
 
 @products.route('/', methods=['PUT'])
 @token_required
@@ -101,8 +107,7 @@ async def bp_create_product(request):
         created_product = product_repo.get_product_by_object_id(product_id)
         
         # Serialize ObjectId
-        if created_product and "_id" in created_product:
-            created_product["_id"] = str(created_product["_id"])
+        created_product = _serialize_product(created_product)
         
         return json({
             "success": "sản phẩm được thêm vào thành công",
@@ -116,3 +121,105 @@ async def bp_create_product(request):
     except Exception as e:
         return json({"error": f"Lỗi server: {str(e)}"}, status=500)
 
+#--------------------------------------------------------------
+#inactive sản phẩm
+#--------------------------------------------------------------
+@products.route('/inactive/<code>', methods=['PATCH'])
+@token_required
+@require_role(enum.User_Role.ADMIN)
+async def bp_inactive_product(request, code):
+    """
+    Chuyển sản phẩm sang trạng thái inactive
+    """
+    try:
+        # Kiểm tra sản phẩm có tồn tại không
+        current_product = product_repo.get_product_by_code(code)
+        if not current_product:
+            return json({"error": "sản phẩm không tồn tại trong hệ thống"}, status=400)
+        
+        # Kiểm tra status hiện tại
+        if current_product.get("status") == enum.Product_Status.INACTIVE:
+            if "_id" in current_product:
+                current_product["_id"] = str(current_product["_id"])
+            return json({
+                "message": "sản phẩm đã ở trạng thái inactive rồi",
+                "product": current_product
+            }, status=200)
+        
+        # Cập nhật status
+        product_repo.update_product(code, {"status": enum.Product_Status.INACTIVE})
+        
+        # Lấy lại sản phẩm vừa update
+        updated_product = product_repo.get_product_by_code(code)
+        updated_product = _serialize_product(updated_product)
+        
+        return json({
+            "success": "Sản phẩm đã được chuyển thành inactive",
+            "product": updated_product
+        }, status=200)
+    except ValueError as e:
+        return json({"error": str(e)}, status=400)
+    except Exception as e:
+        return json({"error": f"Lỗi server: {str(e)}"}, status=500)
+
+#--------------------------------------------------------------
+#active sản phẩm
+#--------------------------------------------------------------
+@products.route('/active/<code>', methods=['PATCH'])
+@token_required
+@require_role(enum.User_Role.ADMIN)
+async def bp_active_product(request, code):
+    """
+    Chuyển sản phẩm sang trạng thái active
+    """
+    try:
+        # Kiểm tra sản phẩm có tồn tại không
+        current_product = product_repo.get_product_by_code(code)
+        if not current_product:
+            return json({"error": "sản phẩm không tồn tại trong hệ thống"}, status=400)
+        
+        # Kiểm tra status hiện tại
+        if current_product.get("status") == enum.Product_Status.ACTIVE:
+            if "_id" in current_product:
+                current_product["_id"] = str(current_product["_id"])
+            return json({
+                "message": "sản phẩm đã ở trạng thái active rồi",
+                "product": current_product
+            }, status=200)
+        
+        # Cập nhật status
+        product_repo.update_product(code, {"status": enum.Product_Status.ACTIVE})
+        
+        # Lấy lại sản phẩm vừa update
+        updated_product = product_repo.get_product_by_code(code)
+        updated_product = _serialize_product(updated_product)
+        
+        return json({
+            "success": "Sản phẩm đã được chuyển thành active",
+            "product": updated_product
+        }, status=200)
+    except ValueError as e:
+        return json({"error": str(e)}, status=400)
+    except Exception as e:
+        return json({"error": f"Lỗi server: {str(e)}"}, status=500)
+
+#--------------------------------------------------------------
+#xóa sản phẩm đang inactive
+#--------------------------------------------------------------
+@products.route('/<code>', methods=['DELETE'])
+@token_required
+@require_role(enum.User_Role.ADMIN)
+async def bp_delete_product_by_code(request, code):
+    """
+    Xóa sản phẩm (chỉ xóa được sản phẩm inactive)
+    """
+    try:
+        deleted_product = product_repo.delete_product(code)
+        return json({
+            "success": "Xóa sản phẩm thành công",
+            "product": _serialize_product(deleted_product)
+        }, status=200)
+    except ValueError as e:
+        return json({"error": str(e)}, status=400)
+    except Exception as e:
+        return json({"error": f"Lỗi server: {str(e)}"}, status=500)

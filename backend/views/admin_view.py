@@ -1,6 +1,6 @@
 from bson import ObjectId
 
-__all__ = ["product_list_view"]
+__all__ = ["product_list_view","_serialize_product"]
 
 def _serialize_product(product: dict) -> dict:
     """Convert MongoDB ObjectId to string for JSON serialization."""
