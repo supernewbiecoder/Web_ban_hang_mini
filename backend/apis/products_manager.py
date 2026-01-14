@@ -4,6 +4,9 @@ from backend.databases.product_collection import ProductRepository
 from backend.databases.supplier_collection import SupplierRepository
 from backend.decorators.__init__ import *
 from sanic import Blueprint, json, text
+from backend.views.admin_view import *
+from backend.views.user_view import *
+from backend.hooks.product_hook import *
 from backend.constants.product_filter import Product_filter
 from bson import ObjectId
 
@@ -13,57 +16,22 @@ supplier_repo = SupplierRepository(_db)
 products = Blueprint('products_manager', url_prefix='/products')
 
 
-def _serialize_product(product: dict) -> dict:
-    """Convert MongoDB ObjectId to string for JSON serialization."""
-    if isinstance(product.get("_id"), ObjectId):
-        product["_id"] = str(product["_id"])
-    return product
-
-
 @products.route('/')
 @optional_auth
-async def bp_root(request):
-    product_name = request.args.get("name")
-    product_code = request.args.get("product_code")
-    category = request.args.get("category")
-    supplier_name = request.args.get("supplier_name")
-    supplier_id = request.args.get("supplier_code")
-    status = request.args.get("status")
-    
-    # Xử lý start/end an toàn
-    try:
-        start = int(request.args.get("start"))
-    except (TypeError, ValueError):
-        start = -1
-    
-    try:
-        end = int(request.args.get("end"))
-    except (TypeError, ValueError):
-        end = -1
+async def bp_get_products(request):
+    # Lấy filter từ request
+    filter_obj = get_filter_request(request)
     
     # Kiểm tra nhà cung cấp tồn tại hay không
-    if supplier_name and not supplier_id:
-        supplier = supplier_repo.get_supplier_by_name(supplier_name)
-        if not supplier:
-            return json({"error": "Nhà cung cấp không tồn tại"}, status=404)
-        supplier_id = supplier.get("code")  # Lấy code, không phải _id
-    elif supplier_id and not supplier_name:
-        supplier = supplier_repo.get_supplier_by_code(supplier_id)
-        if not supplier:
-            return json({"error": "Nhà cung cấp không tồn tại"}, status=404)
-        supplier_name = supplier.get("name")
-    
-    filter_obj = Product_filter(
-        product_name=product_name,
-        product_code=product_code,
-        category=category,
-        supplier_name=supplier_name,
-        supplier_id=supplier_id,
-        status=status,
-        start=start,
-        end=end
-    )
-    
+    is_exist, result = check_is_supplier_exist(supplier_repo, filter_obj.supplier_name, filter_obj.supplier_id)
+    if not is_exist:
+        return json(result[1], status=result[2])
+    supplier_name, supplier_id = result
+
+    #fill thông tin supplier vào filter cho chuẩn
+    filter_obj.supplier_name = supplier_name
+    filter_obj.supplier_id = supplier_id
+
     # Lấy thông tin products từ filter
     products_data = product_repo.get_products_by_filter(filter_obj.to_dict())
     
@@ -72,22 +40,17 @@ async def bp_root(request):
     
     # Guest hoặc User chỉ thấy sản phẩm active và thông tin giới hạn
     if user_role in [enum.User_Role.GUEST, enum.User_Role.USER]:
-        result = []
-        for product in products_data:
-            if product.get("status") == "active":
-                result.append({
-                    "name": product.get("name"),
-                    "code": product.get("code"),
-                    "category": product.get("category"),
-                    "sell_price": product.get("sell_price"),
-                    "total_quantity": product.get("total_quantity")
-                })
+        result = product_list_view(products_data)
+        if not result:
+            return json({"message": "Không có sản phẩm nào"}, status=200)
         return json({"products": result, "count": len(result)}, status=200)
     
     # Admin thấy toàn bộ thông tin
     elif user_role == enum.User_Role.ADMIN:
-        serialized_products = [_serialize_product(p) for p in products_data]
-        return json({"products": serialized_products, "count": len(serialized_products)}, status=200)
+        result = product_list_view(products_data)
+        if not result:
+            return json({"message": "Không có sản phẩm nào"}, status=200)
+        return json(result, status=200)
     
     # Role không xác định
     else:

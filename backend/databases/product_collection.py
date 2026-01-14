@@ -74,17 +74,17 @@ class ProductRepository:
         query: Dict = {
             k: v
             for k, v in (filter or {}).items()
-            if v not in (None, "") and k not in ("start", "end", "supplier_name")
+            if v not in (None, "") and k not in ("start", "num", "supplier_name")
         }
 
         cursor = self.product.find(query)
         start = filter.get("start")
-        end = filter.get("end")
-        # Nếu page/limit đều -1 thì không áp dụng skip/limit (trả toàn bộ)
-        if start is not None and end is not None:
+        num = filter.get("num")
+        # lấy num sản phẩm tính từ start
+        if start is not None and num is not None:
             start = max(start, 1)
-            end = max(end, 1)
-            cursor = cursor.skip(start).limit(end)
+            num = max(num, 1)
+            cursor = cursor.skip(start-1).limit(num)
         return list(cursor)
     
     def update_product(self, code: str, update_data: Dict) -> bool:

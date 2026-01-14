@@ -10,7 +10,7 @@ class Product_filter:
         product_code: str = None,
         supplier_name: str = None,
         product_name: str = None,
-        start: int = None, end: int = None,
+        start: int = None, num: int = None,
         
     ):
         self.category = category
@@ -20,9 +20,9 @@ class Product_filter:
         self.supplier_name = supplier_name
         self.product_name = product_name
         if start == -1: start = None
-        if end == -1: end = None
+        if num == -1: num = None
         self.start = start
-        self.end = end
+        self.num = num
     def to_dict(self) -> Dict:
         return {
             "category": self.category,
@@ -32,6 +32,6 @@ class Product_filter:
             "supplier_name": self.supplier_name,
             "name": self.product_name,  # Map to 'name' field in DB
             "start": self.start,
-            "end": self.end,
+            "num": self.num,
         }
 
