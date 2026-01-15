@@ -4,22 +4,6 @@ from backend.models.product import create_product_schema
 from jsonschema import ValidationError
 from sanic import json
 
-def is_supplier_exists(supplier_repo, supplier_id):
-    """
-    Kiểm tra nhà cung cấp có tồn tại không
-    
-    Returns:
-        tuple: (is_valid, error_response or supplier_object)
-    """
-    if not supplier_id:
-        return False, json({"error": "supplier_id là bắt buộc"}, status=400)
-    
-    supplier = supplier_repo.get_supplier_by_code(supplier_id)
-    if not supplier:
-        return False, json({"error": "id nhà cung cấp không tồn tại, hãy tạo nhà cung cấp trước"}, status=400)
-    
-    return True, supplier
-
 
 def is_product_not_duplicate(product_repo, product_code):
     """
@@ -69,16 +53,4 @@ def get_filter_request(request):
     )
     return filter_obj
 
-def check_is_supplier_exist(supplier_repo, supplier_name, supplier_id):
-    if supplier_name and not supplier_id:
-        supplier = supplier_repo.get_supplier_by_name(supplier_name)
-        if not supplier:
-            return False, {"error": "Nhà cung cấp không tồn tại"}, 404
-        supplier_id = supplier.get("code")  # Lấy code, không phải _id
-    elif supplier_id and not supplier_name:
-        supplier = supplier_repo.get_supplier_by_code(supplier_id)
-        if not supplier:
-            return False, {"error": "Nhà cung cấp không tồn tại"}, 404
-        supplier_name = supplier.get("name")
-    return True, (supplier_name, supplier_id)
     

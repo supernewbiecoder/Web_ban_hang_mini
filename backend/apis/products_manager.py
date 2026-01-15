@@ -8,8 +8,6 @@ from backend.databases.supplier_collection import SupplierRepository
 from backend.decorators import optional_auth, token_required, require_role
 from backend.hooks.product_hook import (
     get_filter_request,
-    check_is_supplier_exist,
-    is_supplier_exists,
     is_product_not_duplicate
 )
 from backend.models.product import create_product_schema
@@ -43,18 +41,23 @@ async def bp_get_products(request):
     # Lấy filter từ request
     filter_obj = get_filter_request(request)
     
-    # Kiểm tra nhà cung cấp tồn tại
-    is_exist, result = check_is_supplier_exist(
-        supplier_repo, 
-        filter_obj.supplier_name, 
-        filter_obj.supplier_id
-    )
-    if not is_exist:
-        return json(result[1], status=result[2])
-    
-    supplier_name, supplier_id = result
-    filter_obj.supplier_name = supplier_name
-    filter_obj.supplier_id = supplier_id
+    # Nếu filter theo supplier (id hoặc name) thì đối chiếu và điền đủ thông tin
+    if filter_obj.supplier_id or filter_obj.supplier_name:
+        supplier_doc = None
+        if filter_obj.supplier_id:
+            is_exist, supplier_payload, status = supplier_repo.is_supplier_exist(
+                filter_obj.supplier_id
+            )
+            if not is_exist:
+                return json(supplier_payload, status=status)
+            supplier_doc = supplier_payload
+        elif filter_obj.supplier_name:
+            supplier_doc = supplier_repo.get_supplier_by_name(filter_obj.supplier_name)
+            if not supplier_doc:
+                return json({"error": "Nhà cung cấp không tồn tại"}, status=400)
+
+        filter_obj.supplier_name = supplier_doc.get("name")
+        filter_obj.supplier_id = supplier_doc.get("code")
 
     # Lấy products từ database
     products_data = product_repo.get_products_by_filter(filter_obj.to_dict())
@@ -97,12 +100,11 @@ async def bp_create_product(request):
         validate_data(product_data, create_product_schema)
         
         # Kiểm tra supplier tồn tại
-        is_valid, result = is_supplier_exists(
-            supplier_repo, 
+        is_valid, supplier_payload, status = supplier_repo.is_supplier_exist(
             product_data.get("supplier_id")
         )
         if not is_valid:
-            return result
+            return json(supplier_payload, status=status)
         
         # Kiểm tra product chưa tồn tại
         is_valid, error_response = is_product_not_duplicate(

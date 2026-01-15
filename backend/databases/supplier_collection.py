@@ -1,13 +1,11 @@
 from backend.constants.mongodb_constants import MongoCollections
 from backend.databases.mongodb import MongoDB
 from pymongo.errors import DuplicateKeyError
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Tuple
 from datetime import datetime
 from bson import ObjectId
-from jsonschema import validate, ValidationError
 from backend.models.supplier import create_supplier_schema, update_supplier_schema
-
-
+from backend.utils.validation import validate_data
 class SupplierRepository:
     def __init__(self, db: MongoDB):
         self.supplier = db.get_collection(MongoCollections.supplier)
@@ -21,14 +19,7 @@ class SupplierRepository:
         except Exception:
             pass
 
-    def _validate_data(self, data: Dict, schema: Dict) -> None:
-        """Validate dữ liệu theo JSON schema"""
-        try:
-            validate(instance=data, schema=schema)
-        except ValidationError as e:
-            raise ValidationError(f"Dữ liệu không hợp lệ: {e.message}")
-
-
+    
     def insert_supplier(self, supplier_data: Dict):
         """
         Thêm một supplier mới
@@ -43,7 +34,7 @@ class SupplierRepository:
             ValidationError: Nếu dữ liệu không hợp lệ
             ValueError: Nếu supplier đã tồn tại
         """
-        self._validate_data(supplier_data, create_supplier_schema) #Bad request _400 bao giờ tạo API route thì chuyen sang đấy sau
+        validate_data(supplier_data, create_supplier_schema) #Bad request _400 bao giờ tạo API route thì chuyen sang đấy sau
 
         now_iso = datetime.now().isoformat()
         supplier_data.setdefault("created_at", now_iso)
@@ -67,6 +58,23 @@ class SupplierRepository:
         """Lấy supplier theo MongoDB ObjectId"""
         return self.supplier.find_one({"_id": ObjectId(object_id)})
 
+    def get_suppliers_by_filter(self,filter)->List[Dict]:
+        query: Dict = {
+            k: v 
+            for k, v in (filter or {}).items()
+            if v not in (None, "") and k not in ("start", "num")
+        }
+        cursor = self.supplier.find(query)
+        start = filter.get("start")
+        num = filter.get("num")
+        # lấy num sản phẩm tính từ start
+        if start is not None and num is not None:
+            start = max(start, 1)
+            num = max(num, 1)
+            cursor = cursor.skip(start-1).limit(num)
+        return list(cursor)
+
+
     def get_all_suppliers(self) -> List[Dict]:
         """Lấy tất cả suppliers"""
         return list(self.supplier.find())
@@ -85,7 +93,7 @@ class SupplierRepository:
         Raises:
             ValidationError: Nếu dữ liệu không hợp lệ
         """
-        self._validate_data(update_data, update_supplier_schema) #Bad request _400 bao giờ tạo API route thì chuyển sang đấy sau
+        validate_data(update_data, update_supplier_schema) #Bad request _400 bao giờ tạo API route thì chuyển sang đấy sau
 
         update_data["updated_at"] = datetime.now().isoformat()
 
@@ -128,3 +136,21 @@ class SupplierRepository:
         }}
         )
         return result.modified_count > 0
+
+    def is_supplier_exist(self, supplier_code: str) -> Tuple[bool, Dict, int]:
+        """Kiểm tra sự tồn tại của supplier theo code.
+
+        Returns:
+            Tuple[bool, Dict, int]:
+                - is_valid: True nếu tìm thấy, False nếu lỗi.
+                - payload: supplier document khi thành công, hoặc dict lỗi khi thất bại.
+                - status: mã HTTP gợi ý.
+        """
+        if not supplier_code:
+            return False, {"error": "supplier_id là bắt buộc"}, 400
+
+        supplier = self.get_supplier_by_code(supplier_code)
+        if not supplier:
+            return False, {"error": "id nhà cung cấp không tồn tại, hãy tạo nhà cung cấp trước"}, 400
+
+        return True, supplier, 200
