@@ -62,14 +62,31 @@ async def bp_get_orders(request):
 @token_required
 @require_role(enum.User_Role.USER)
 async def bp_create_order(request):
-    """Tạo đơn hàng mới - Chỉ User."""
+    """Tạo đơn hàng mới - Chỉ User.
+    
+    Yêu cầu người dùng phải cung cấp:
+    - shipping_address: Địa chỉ giao hàng (object)
+    - items: Danh sách sản phẩm trong đơn hàng (array, tối thiểu 1 item)
+    - payment_method: Phương thức thanh toán (mặc định: cod - tiền mặt)
+    """
     try:
         order_data = request.json or {}
+        
         # Force assign current user as owner
         username = request.ctx.user.get("username")
         if not username:
             return json({"error": "Không xác định được người dùng"}, status=400)
         order_data["user_id"] = username
+
+        # Validate required user input: shipping_address and items
+        if not order_data.get("shipping_address"):
+            return json({"error": "Địa chỉ giao hàng là bắt buộc"}, status=400)
+        
+        if not order_data.get("items") or len(order_data.get("items", [])) == 0:
+            return json({"error": "Danh sách sản phẩm không được rỗng"}, status=400)
+
+        # Set default payment_method to cod (cash on delivery) if not provided
+        order_data.setdefault("payment_method", "cod")
 
         # Generate random order_id with prefix if missing
         order_data.setdefault(
@@ -77,7 +94,7 @@ async def bp_create_order(request):
             f"ORD-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}-{uuid.uuid4().hex[:6].upper()}"
         )
 
-        # Validate payload
+        # Validate payload against schema
         validate_data(order_data, create_order_schema)
 
         # Insert into database
