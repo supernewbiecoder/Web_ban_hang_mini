@@ -3,3 +3,4 @@ class MongoCollections:
     supplier = 'supplier'
     product = 'product'
     batch = 'batch'
+    order = 'order'

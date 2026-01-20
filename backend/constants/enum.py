@@ -13,3 +13,9 @@ class User_Role:
 class User_Status:
     ACTIVE = "active"
     INACTIVE = "inactive"
+class Payment_Status:
+    PENDING = "pending"
+    SUCCESS = "success"
+class Order_Status:
+    PROCESSING = "processing"
+    SUCCESS = "success"
