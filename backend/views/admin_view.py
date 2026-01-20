@@ -17,3 +17,9 @@ def supplier_list_view(suppliers_data):
     for p in suppliers_data:
         serialized_suppliers.append(_serialize_object(p))
     return {"suppliers": serialized_suppliers, "count": len(serialized_suppliers)}
+
+def user_list_view(users_data):
+    serialized_users = []
+    for u in users_data:
+        serialized_users.append(_serialize_object(u))
+    return {"users": serialized_users, "count": len(serialized_users)}
