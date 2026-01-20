@@ -23,3 +23,4 @@ def supplier_list_view(suppliers_data):
                 "phone": supplier.get("phone"),
                 "email": supplier.get("email")
             })
+    return result

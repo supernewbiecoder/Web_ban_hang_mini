@@ -77,7 +77,7 @@ async def bp_get_products(request):
         result = product_list_view(products_data)
         if not result:
             return json({"message": "Không có sản phẩm nào"}, status=200)
-        return json(result, status=200)
+        return json({"products": result, "count": len(result)}, status=200)
     
     # Role không xác định
     return json({"error": "Không có quyền truy cập"}, status=403)
