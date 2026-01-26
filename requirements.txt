@@ -1,4 +1,5 @@
 sanic == 25.3
+sanic-cors
 python-dotenv
 pymongo
 PyJWT

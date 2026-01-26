@@ -5,4 +5,5 @@ from backend.apis.auth_manager import auth
 from backend.apis.suppliers_manager import suppliers
 from backend.apis.user_manager import user
 from backend.apis.order_manager import orders
-api = Blueprint.group(products,example,auth,suppliers,user,orders)
+from backend.apis.cart_manager import cart
+api = Blueprint.group(products,example,auth,suppliers,user,orders,cart)

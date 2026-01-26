@@ -1,3 +1,6 @@
+from typing import Dict
+
+
 class User_filter:
     def __init__(
             self,

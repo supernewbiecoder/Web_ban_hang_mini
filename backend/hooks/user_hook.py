@@ -20,7 +20,6 @@ def get_filter_request(request):
         email=email,
         status=status,
         role=role,
-        status=status,
         start=start,
         num=num
     )

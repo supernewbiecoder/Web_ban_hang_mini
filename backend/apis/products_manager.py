@@ -10,7 +10,7 @@ from backend.hooks.product_hook import (
     get_filter_request,
     is_product_not_duplicate
 )
-from backend.models.product import create_product_schema
+from backend.models.product import create_product_schema,filter_product_schema
 from backend.utils.validation import validate_data
 from backend.views.user_view import product_list_view
 
@@ -38,6 +38,10 @@ def _serialize_product(product):
 @optional_auth
 async def bp_get_products(request):
     """Lấy danh sách sản phẩm theo filter - Role khác nhau có quyền xem khác nhau."""
+    try:
+        validate_data(request.args, filter_product_schema)
+    except ValidationError as e:
+        return json({"error": "Payload không hợp lệ", "details": e.message}, status=400)
     # Lấy filter từ request
     filter_obj = get_filter_request(request)
     

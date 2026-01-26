@@ -77,9 +77,9 @@ class ProductRepository:
         num = filter.get("num")
         # lấy num sản phẩm tính từ start
         if start is not None and num is not None:
-            start = max(start, 1)
+            start = max(start, 0)
             num = max(num, 1)
-            cursor = cursor.skip(start-1).limit(num)
+            cursor = cursor.skip(start).limit(num)
         return list(cursor)
     
     def update_product(self, code: str, update_data: Dict) -> bool:

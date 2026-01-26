@@ -8,7 +8,6 @@ class Product:
         code: str,
         name: str,
         category: str,
-        unit: str,
         supplier_id: str,
         sell_price: float,
         import_price: float,
@@ -23,7 +22,6 @@ class Product:
         self.code = code
         self.name = name
         self.category = category
-        self.unit = unit
         self.supplier_id = supplier_id
         self.sell_price = sell_price
         self.import_price = import_price
@@ -42,7 +40,6 @@ class Product:
             "code": self.code,
             "name": self.name,
             "category": self.category,
-            "unit": self.unit,
             "supplier_id": self.supplier_id,
             "sell_price": self.sell_price,
             "import_price": self.import_price,
@@ -60,7 +57,6 @@ class Product:
             code=data.get("code"),
             name=data.get("name"),
             category=data.get("category"),
-            unit=data.get("unit"),
             supplier_id=data.get("supplier_id"),
             sell_price=data.get("sell_price", 0),
             import_price=data.get("import_price", 0),
@@ -78,7 +74,6 @@ create_product_schema = {
         "code": {"type": "string", "minLength": 1},
         "name": {"type": "string", "minLength": 1},
         "category": {"type": "string", "minLength": 1},
-        "unit": {"type": "string", "minLength": 1},
         "supplier_id": {"type": "string", "minLength": 1},
         "sell_price": {"type": "number", "minimum": 0},
         "import_price": {"type": "number", "minimum": 0},
@@ -96,7 +91,6 @@ create_product_schema = {
         "code",
         "name",
         "category",
-        "unit",
         "supplier_id",
         "sell_price",
         "import_price"
@@ -110,13 +104,26 @@ update_product_schema = {
         "code": {"type": "string", "minLength": 1},
         "name": {"type": "string", "minLength": 1},
         "category": {"type": "string", "minLength": 1},
-        "unit": {"type": "string", "minLength": 1},
         "supplier_id": {"type": "string", "minLength": 1},
         "sell_price": {"type": "number", "minimum": 0},
         "import_price": {"type": "number", "minimum": 0},
         "description": {"type": "string"},
         "total_quantity": {"type": "integer", "minimum": 0},
         "status": {"type": "string", "enum": [enum.Product_Status.ACTIVE, enum.Product_Status.INACTIVE]},
+    },
+    "additionalProperties": False
+}
+filter_product_schema = {
+    "type": "object",
+    "properties": {
+        "category": {"type": "string"},
+        "status": {"type": "string", "enum": [enum.Product_Status.ACTIVE, enum.Product_Status.INACTIVE]},
+        "supplier_id": {"type": "string"},
+        "product_code": {"type": "string"},
+        "supplier_name": {"type": "string"},
+        "product_name": {"type": "string"},
+        "start": {"type": "integer", "minimum": 0},
+        "num": {"type": "integer", "minimum": 1},
     },
     "additionalProperties": False
 }

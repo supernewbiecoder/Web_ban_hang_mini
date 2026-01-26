@@ -69,6 +69,8 @@ create_supplier_schema = {
         "updated_at": {"type": "string", "format": "date-time"},
     },
     "required": ["code", "name", "phone", "email", "address"],
+    "additionalProperties": False,
+
 }
 
 update_supplier_schema = {
@@ -83,4 +85,20 @@ update_supplier_schema = {
         "created_at": {"type": "string", "format": "date-time"},
         "updated_at": {"type": "string", "format": "date-time"},
     },
+    "additionalProperties": False,
+
+}
+filter_supplier_schema = {
+    "type": "object",
+    "properties": {
+        "code": {"type": "string", "minLength": 1},
+        "name": {"type": "string", "minLength": 1},
+        "phone": {"type": "string", "minLength": 1},
+        "email": {"type": "string", "format": "email"},
+        "address": {"type": "string", "minLength": 1},
+        "status": {"type": "string", "enum": ["active", "inactive"]},
+        "start": {"type": "integer", "minimum": 1},
+        "num": {"type": "integer", "minimum": 1},
+    },
+    "additionalProperties": False,
 }

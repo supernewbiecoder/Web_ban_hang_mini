@@ -7,7 +7,7 @@ from backend.databases.product_collection import ProductRepository
 from backend.decorators.auth import optional_auth, token_required, require_role
 from backend.hooks.supplier_hook import get_filter_request
 from backend.constants.enum import User_Role
-from backend.models.supplier import create_supplier_schema, update_supplier_schema
+from backend.models.supplier import create_supplier_schema, update_supplier_schema, filter_supplier_schema
 from backend.utils.validation import validate_data
 from backend.views.user_view import supplier_list_view
 
@@ -36,6 +36,10 @@ async def bp_get_suppliers(request):
     Role GUEST/USER: chỉ trả về thông tin cơ bản.
     Role ADMIN: trả về toàn bộ thông tin.
     """
+    try:
+        validate_data(request.args, filter_supplier_schema)
+    except ValidationError:
+        return json({"error": "dữ liệu không đúng định dạng schema"}, status=400)
     filter_obj = get_filter_request(request)
     suppliers_data = supplier_repo.get_suppliers_by_filter(filter_obj.to_dict())
 

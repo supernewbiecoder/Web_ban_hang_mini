@@ -1,6 +1,7 @@
 from sanic import Blueprint, json
 from backend.databases.mongodb import MongoDB
 from backend.databases.order_collection import OrderRepository
+from backend.databases.product_collection import ProductRepository
 from backend.decorators import token_required, require_role
 from backend.constants import enum
 from backend.constants.order_filter import Order_filter
@@ -14,8 +15,8 @@ import uuid
 
 _db = MongoDB()
 order_repo = OrderRepository(_db)
+product_repo = ProductRepository(_db)
 orders = Blueprint('order_manager', url_prefix='/orders')
-
 
 # ===================================================================
 # GET ALL ORDERS - Filtered by role
@@ -84,6 +85,19 @@ async def bp_create_order(request):
         
         if not order_data.get("items") or len(order_data.get("items", [])) == 0:
             return json({"error": "Danh sách sản phẩm không được rỗng"}, status=400)
+
+        total_price = 0
+        for item in order_data["items"]:
+            if item.get("product_id") is None or item.get("name") is None or item.get("price") is None or item.get("quantity") is None:
+                return json({"error": "Mỗi sản phẩm phải có product_id, name, price và quantity"}, status=400)
+            product_id = item["product_id"]
+            product = product_repo.get_product_by_id(product_id)
+            if not product:
+                return json({"error": f"Sản phẩm với product_id {product_id} không tồn tại"}, status=400)
+            else:
+                total_price += product.get("sell_price") * item.get("quantity")
+        
+        order_data["price"] = round(total_price, 2)
 
         # Set default payment_method to cod (cash on delivery) if not provided
         order_data.setdefault("payment_method", "cod")

@@ -25,17 +25,8 @@ create_user_schema={
         "role": {"type": "string", "enum": [enum.User_Role.ADMIN, enum.User_Role.USER, enum.User_Role.GUEST]},
         "status": {"type": "string", "enum": [enum.User_Status.ACTIVE, enum.User_Status.INACTIVE]}
     },
-    'required' : ['username', 'password', 'role']
-}
-
-# Schemas specialized for auth flows
-register_user_schema={
-    'type':'object',
-    'properties' : {
-        "username": {"type": "string"},
-        "password": {"type": "string"}
-    },
-    'required' : ['username', 'password']
+    'required' : ['username', 'password'],
+    "additionalProperties": False
 }
 
 login_user_schema={
@@ -44,5 +35,6 @@ login_user_schema={
         "username": {"type": "string"},
         "password": {"type": "string"}
     },
-    'required' : ['username', 'password']
+    'required' : ['username', 'password'],
+    "additionalProperties": False
 }

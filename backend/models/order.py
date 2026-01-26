@@ -12,6 +12,7 @@ class Order:
                  payment_status: str = Payment_Status.PENDING,
                  order_status: str = Order_Status.PROCESSING,
                  note: str = "",
+                 price: float = 0.0,
                  created_at: Optional[datetime] = None):
         self.order_id = order_id  # Fixed to match parameter name
         self.customer_id = customer_id
@@ -21,6 +22,7 @@ class Order:
         self.payment_status = payment_status
         self.order_status = order_status
         self.note = note
+        self.price = price
         self.created_at = created_at or datetime.utcnow()
         
     def to_dict(self) -> Dict:
@@ -37,6 +39,7 @@ class Order:
             "payment_status": self.payment_status,
             "order_status": self.order_status,
             "note": self.note,
+            "price": self.price,
             "created_at": _dt(self.created_at),
         }
 
@@ -55,7 +58,6 @@ create_order_schema = {
                     "name": {"type": "string"},
                     "price": {"type": "number", "minimum": 0},
                     "quantity": {"type": "integer", "minimum": 1},
-                    "unit": {"type": "string"}
                 },
                 "required": ["product_id", "name", "price", "quantity"]
             }
@@ -73,7 +75,9 @@ create_order_schema = {
         "payment_method": {"type": "string", "enum": ["cod", "momo", "vnpay", "banking"]},
         "note": {"type": "string"}
     },
-    "required": ["user_id", "items", "total_amount", "shipping_address", "payment_method"]
+    "required": ["user_id", "items", "total_amount", "shipping_address", "payment_method"],
+    "additionalProperties": False,
+
 }
 
 # Optional: Add update order schema if needed
