@@ -1,0 +1,58 @@
+:root{
+  --primary:#ee4d2d; /* Shopee orange */
+  --primary-dark:#d63f22;
+  --text:#1f2937;
+  --muted:#6b7280;
+  --bg:#f5f5f5;
+  --white:#ffffff;
+  --shadow:0 2px 10px rgba(0,0,0,.06);
+  --radius:10px;
+}
+*{box-sizing:border-box}
+html,body,#root{height:100%}
+body{margin:0;font-family:Inter,system-ui,Arial,Helvetica,sans-serif;color:var(--text);background:var(--bg)}
+
+.container{max-width:1200px;margin:0 auto;padding:0 16px}
+
+.btn{background:var(--primary);color:#fff;border:none;padding:10px 14px;border-radius:8px;cursor:pointer;font-weight:600}
+.btn:hover{background:var(--primary-dark)}
+.btn.outline{background:#fff;color:var(--primary);border:1px solid var(--primary)}
+.input{padding:10px 12px;border:1px solid #e5e7eb;border-radius:8px;width:100%}
+.card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow)}
+
+/* Header */
+.header{background:var(--white);box-shadow:var(--shadow);position:sticky;top:0;z-index:10}
+.header-inner{display:flex;align-items:center;gap:16px;padding:12px 0}
+.logo{color:var(--primary);font-weight:800;font-size:22px;text-decoration:none}
+.search{flex:1;display:flex;gap:8px}
+.search input{flex:1}
+.nav-actions{display:flex;gap:14px;align-items:center}
+.badge{position:relative;display:inline-flex}
+.badge .count{position:absolute;top:-6px;right:-10px;background:var(--primary);color:#fff;border-radius:999px;padding:2px 6px;font-size:11px;font-weight:700}
+
+/* Product grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+.product-card{overflow:hidden}
+.product-thumb{height:180px;background:#fafafa;display:flex;align-items:center;justify-content:center}
+.product-body{padding:12px}
+.product-name{margin:0 0 6px 0;font-size:15px;line-height:1.3;height:38px;overflow:hidden}
+.product-price{color:var(--primary);font-weight:800}
+.product-actions{display:flex;gap:8px;margin-top:10px}
+
+/* Sections */
+.section{padding:20px 0}
+.section-title{margin:0 0 14px 0}
+
+/* Table */
+.table{width:100%;border-collapse:collapse;background:#fff;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.table th,.table td{padding:12px;border-bottom:1px solid #f0f0f0}
+.table th{text-align:left;background:#fafafa}
+.table tfoot td{font-weight:700}
+
+/* Footer */
+.footer{margin-top:40px;background:#111;color:#ddd}
+.footer .footer-inner{padding:24px 0}
+
+/* Auth forms */
+.form{max-width:420px}
+.form .row{display:grid;gap:10px;margin-bottom:10px}

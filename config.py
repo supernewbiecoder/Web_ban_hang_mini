@@ -16,7 +16,13 @@ class Config:
     MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
     MONGO_DB_NAME = os.getenv("MONGO_DB_NAME", "web_ban_hang_mini")
 
-    CORS_ORIGINS = os.getenv("CORS_ORIGINS", "").split(",")
+    # Allow frontend (5173) and localhost by default
+    CORS_ORIGINS = [
+        o.strip() for o in os.getenv(
+            "CORS_ORIGINS",
+            "http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000,http://127.0.0.1:3000"
+        ).split(",") if o.strip()
+    ]
 
     LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
     EXPIRATION_JWT = 3600

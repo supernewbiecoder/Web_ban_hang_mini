@@ -1,3 +1,4 @@
+import logging
 from sanic import Blueprint, json
 from jsonschema import ValidationError
 
@@ -12,6 +13,7 @@ from backend.utils.validation import validate_data
 _db = MongoDB()
 cart_repo = CartRepository(_db)
 product_repo = ProductRepository(_db)
+logger = logging.getLogger(__name__)
 
 # Create blueprint
 cart = Blueprint('cart_manager', url_prefix='/cart')
@@ -56,6 +58,7 @@ async def bp_get_cart(request):
         }, status=200)
     
     except Exception as e:
+        logger.exception("Error get cart")
         return json({"error": f"Lỗi server: {str(e)}"}, status=500)
 
 
@@ -86,7 +89,8 @@ async def bp_add_to_cart(request):
         
         # Kiểm tra sản phẩm có tồn tại không (tùy chọn, để đảm bảo tính toàn vẹn)
         product_id = item_data.get("product_id")
-        product = product_repo.get_product_by_id(product_id)
+        # product_id ở frontend đang là code; dùng get_product_by_code
+        product = product_repo.get_product_by_code(product_id)
         if not product:
             return json({"error": f"Sản phẩm với ID {product_id} không tồn tại"}, status=404)
         
@@ -114,6 +118,7 @@ async def bp_add_to_cart(request):
     except ValidationError as e:
         return json({"error": f"Dữ liệu không hợp lệ: {str(e)}"}, status=400)
     except Exception as e:
+        logger.exception("Error add to cart")
         return json({"error": f"Lỗi server: {str(e)}"}, status=500)
 
 
@@ -164,6 +169,7 @@ async def bp_update_cart_item(request, product_id):
     except ValidationError as e:
         return json({"error": f"Dữ liệu không hợp lệ: {str(e)}"}, status=400)
     except Exception as e:
+        logger.exception("Error update cart item")
         return json({"error": f"Lỗi server: {str(e)}"}, status=500)
 
 
@@ -196,6 +202,7 @@ async def bp_remove_from_cart(request, product_id):
         }, status=200)
     
     except Exception as e:
+        logger.exception("Error remove cart item")
         return json({"error": f"Lỗi server: {str(e)}"}, status=500)
 
 
@@ -228,4 +235,5 @@ async def bp_clear_cart(request):
         }, status=200)
     
     except Exception as e:
+        logger.exception("Error clear cart")
         return json({"error": f"Lỗi server: {str(e)}"}, status=500)

@@ -47,6 +47,7 @@ class Order:
 create_order_schema = {
     "type": "object",
     "properties": {
+        "order_id": {"type": "string"},
         "user_id": {"type": "string"},
         "items": {
             "type": "array",
@@ -63,6 +64,7 @@ create_order_schema = {
             }
         },
         "total_amount": {"type": "number", "minimum": 0},
+        "price": {"type": "number", "minimum": 0},
         "shipping_address": {
             "type": "object",
             "properties": {

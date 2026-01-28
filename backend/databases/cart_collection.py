@@ -12,7 +12,8 @@ class CartRepository:
             db: MongoDB instance
         """
         self.db = db
-        self.collection = db.client[db.database_name]["carts"]
+        # MongoDB wrapper exposes client and db; use db.db to get database handle
+        self.collection = db.db["carts"]
         # Tạo index để tìm cart nhanh hơn
         self.collection.create_index("username", unique=True)
     
@@ -81,7 +82,7 @@ class CartRepository:
                 }
             }
         )
-        return result.modified_count > 0
+        return result.modified_count > 0 or result.matched_count > 0
     
     def update_item_quantity(self, username: str, product_id: str, quantity: int) -> bool:
         """Cập nhật số lượng item trong giỏ"""

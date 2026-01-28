@@ -6,7 +6,7 @@ class MongoDB:
     def __init__(self, connection_url=None):
         if connection_url is None:
             connection_url = Config.MONGO_URI
-        self.client = MongoClient(connection_url)
+        self.client = MongoClient(connection_url, serverSelectionTimeoutMS=3000)
         self.db = self.client[Config.MONGO_DB_NAME]
 
     def get_collection(self, name):
