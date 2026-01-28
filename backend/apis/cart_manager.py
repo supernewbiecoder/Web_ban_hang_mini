@@ -28,12 +28,17 @@ def _serialize_cart(cart_data):
     total_price = round(sum(item.get("price", 0) * item.get("quantity", 0) for item in items), 2)
     total_items = sum(item.get("quantity", 0) for item in items)
     
+    updated_at = cart_data.get("updated_at")
+    # Convert datetime to ISO string if it's a datetime object
+    if updated_at and hasattr(updated_at, 'isoformat'):
+        updated_at = updated_at.isoformat()
+    
     return {
         "username": cart_data.get("username"),
         "items": items,
         "total_price": total_price,
         "total_items": total_items,
-        "updated_at": cart_data.get("updated_at")
+        "updated_at": updated_at
     }
 
 

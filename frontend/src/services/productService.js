@@ -21,6 +21,11 @@ export const createProduct = async (productData) => {
   return res.data;
 };
 
+export const updateProduct = async (code, productData) => {
+  const res = await api.patch(`/products/${code}`, productData);
+  return res.data;
+};
+
 export const setProductActive = async (code) => {
   const res = await api.patch(`/products/active/${code}`);
   return res.data;
@@ -28,5 +33,10 @@ export const setProductActive = async (code) => {
 
 export const setProductInactive = async (code) => {
   const res = await api.patch(`/products/inactive/${code}`);
+  return res.data;
+};
+
+export const deleteProduct = async (code) => {
+  const res = await api.delete(`/products/${code}`);
   return res.data;
 };

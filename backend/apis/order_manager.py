@@ -91,7 +91,7 @@ async def bp_create_order(request):
             if item.get("product_id") is None or item.get("name") is None or item.get("price") is None or item.get("quantity") is None:
                 return json({"error": "Mỗi sản phẩm phải có product_id, name, price và quantity"}, status=400)
             product_id = item["product_id"]
-            product = product_repo.get_product_by_id(product_id)
+            product = product_repo.get_product_by_code(product_id)
             if not product:
                 return json({"error": f"Sản phẩm với product_id {product_id} không tồn tại"}, status=400)
             else:

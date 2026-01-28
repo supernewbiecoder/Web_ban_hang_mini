@@ -122,6 +122,7 @@ filter_product_schema = {
         "product_code": {"type": "string"},
         "supplier_name": {"type": "string"},
         "product_name": {"type": "string"},
+        "name": {"type": "string"},
         "start": {"type": "integer", "minimum": 0},
         "num": {"type": "integer", "minimum": 1},
     },

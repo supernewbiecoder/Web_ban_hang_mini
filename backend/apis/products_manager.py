@@ -12,7 +12,8 @@ from backend.hooks.product_hook import (
 )
 from backend.models.product import create_product_schema,filter_product_schema
 from backend.utils.validation import validate_data
-from backend.views.user_view import product_list_view
+from backend.views.user_view import product_list_view as user_product_view
+from backend.views.admin_view import product_list_view as admin_product_view
 
 # Initialize database and repositories
 _db = MongoDB()
@@ -38,10 +39,9 @@ def _serialize_product(product):
 @optional_auth
 async def bp_get_products(request):
     """Lấy danh sách sản phẩm theo filter - Role khác nhau có quyền xem khác nhau."""
-    try:
-        validate_data(request.args, filter_product_schema)
-    except ValidationError as e:
-        return json({"error": "Payload không hợp lệ", "details": e.message}, status=400)
+    # Note: Query parameters are strings, so we skip strict JSON schema validation
+    # and just do basic type checks in get_filter_request
+    
     # Lấy filter từ request
     filter_obj = get_filter_request(request)
     
@@ -63,25 +63,30 @@ async def bp_get_products(request):
         filter_obj.supplier_name = supplier_doc.get("name")
         filter_obj.supplier_id = supplier_doc.get("code")
 
-    # Lấy products từ database
-    products_data = product_repo.get_products_by_filter(filter_obj.to_dict())
-    
     # Lấy role từ user context
     user_role = request.ctx.user.get("role")
     
     # Guest/User: chỉ thấy sản phẩm active
     if user_role in [enum.User_Role.GUEST, enum.User_Role.USER]:
-        result = product_list_view(products_data)
+        # Tự động set status = "active" nếu user không chỉ định
+        if not filter_obj.status:
+            filter_obj.status = "active"
+        
+        # Lấy products từ database
+        products_data = product_repo.get_products_by_filter(filter_obj.to_dict())
+        result = user_product_view(products_data)
         if not result:
             return json({"message": "Không có sản phẩm nào"}, status=200)
         return json({"products": result, "count": len(result)}, status=200)
     
     # Admin: thấy toàn bộ
     elif user_role == enum.User_Role.ADMIN:
-        result = product_list_view(products_data)
-        if not result:
-            return json({"message": "Không có sản phẩm nào"}, status=200)
-        return json({"products": result, "count": len(result)}, status=200)
+        # Lấy products từ database
+        products_data = product_repo.get_products_by_filter(filter_obj.to_dict())
+        result = admin_product_view(products_data)
+        if not result.get("products"):
+            return json({"message": "Không có sản phẩm nào", "products": [], "count": 0}, status=200)
+        return json(result, status=200)
     
     # Role không xác định
     return json({"error": "Không có quyền truy cập"}, status=403)
@@ -134,6 +139,45 @@ async def bp_create_product(request):
         
     except ValidationError as e:
         return json({"error": f"Dữ liệu không hợp lệ: {str(e)}"}, status=400)
+    except ValueError as e:
+        return json({"error": str(e)}, status=400)
+    except Exception as e:
+        return json({"error": f"Lỗi server: {str(e)}"}, status=500)
+
+
+# ===================================================================
+# UPDATE PRODUCT - Admin only
+# ===================================================================
+@products.route('/<code>', methods=['PATCH'])
+@token_required
+@require_role(enum.User_Role.ADMIN)
+async def bp_update_product(request, code):
+    """Cập nhật thông tin sản phẩm - Chỉ Admin."""
+    try:
+        # Kiểm tra sản phẩm tồn tại
+        current_product = product_repo.get_product_by_code(code)
+        if not current_product:
+            return json({"error": "Sản phẩm không tồn tại trong hệ thống"}, status=400)
+        
+        update_data = request.json or {}
+        if not update_data:
+            return json({"error": "Không có dữ liệu để cập nhật"}, status=400)
+        
+        # Remove code from update data (cannot update primary key)
+        update_data.pop('code', None)
+        update_data.pop('_id', None)
+        update_data.pop('created_at', None)
+        update_data.pop('updated_at', None)
+        
+        # Update product
+        product_repo.update_product(code, update_data)
+        updated_product = product_repo.get_product_by_code(code)
+        
+        return json({
+            "success": "Cập nhật sản phẩm thành công",
+            "product": _serialize_product(updated_product)
+        }, status=200)
+        
     except ValueError as e:
         return json({"error": str(e)}, status=400)
     except Exception as e:
