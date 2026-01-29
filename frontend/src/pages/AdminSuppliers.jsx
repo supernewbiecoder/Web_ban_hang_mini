@@ -7,6 +7,7 @@ export default function AdminSuppliers() {
   const [suppliers, setSuppliers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const [selectedSupplier, setSelectedSupplier] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [isViewMode, setIsViewMode] = useState(false);
@@ -107,13 +108,28 @@ export default function AdminSuppliers() {
   if (loading) return <Loading text="Đang tải nhà cung cấp..." />;
   if (error) return <div style={{color:'#ef4444',padding:24}}>{error}</div>;
 
+  const filteredSuppliers = suppliers.filter(s => 
+    s.code.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    s.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div>
       <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:24}}>
         <h2 className="section-title" style={{margin:0}}>Quản lý nhà cung cấp</h2>
-        <button className="btn" onClick={handleCreate} style={{display:'flex',alignItems:'center',gap:8}}>
-          <FiPlus/> Thêm nhà cung cấp
-        </button>
+        <div style={{display:'flex',gap:12,alignItems:'center'}}>
+          <input
+            type="text"
+            placeholder="TÌm theo mã hoặc tên..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="input"
+            style={{width:250}}
+          />
+          <button className="btn" onClick={handleCreate} style={{display:'flex',alignItems:'center',gap:8,whiteSpace:'nowrap'}}>
+            <FiPlus/> Thêm nhà cung cấp
+          </button>
+        </div>
       </div>
 
       <div className="card" style={{overflow:'auto'}}>
@@ -130,7 +146,7 @@ export default function AdminSuppliers() {
             </tr>
           </thead>
           <tbody>
-            {suppliers.map((s) => (
+            {filteredSuppliers.map((s) => (
               <tr key={s.code}>
                 <td style={{fontWeight:600}}>{s.code}</td>
                 <td>{s.name}</td>

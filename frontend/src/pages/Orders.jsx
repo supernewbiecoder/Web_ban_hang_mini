@@ -18,6 +18,7 @@ export default function Orders() {
   const [data, setData] = useState({ orders: [], count: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const [expandedOrder, setExpandedOrder] = useState(null);
 
   const fetchData = async () => {
@@ -40,10 +41,24 @@ export default function Orders() {
   if (loading) return <Loading text="Đang tải đơn hàng..." />;
   if (error) return <div style={{ color: '#ef4444', padding: 24 }}>{error}</div>;
 
+  const filteredOrders = data.orders.filter(order => 
+    order.order_id.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div>
-      <h2 className="section-title">Đơn hàng của tôi</h2>
-      {data.orders.length === 0 ? (
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:24}}>
+        <h2 className="section-title" style={{margin:0}}>(Đơn hàng của tôi</h2>
+        <input
+          type="text"
+          placeholder="TÌm theo mã đơn hàng..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="input"
+          style={{width:250}}
+        />
+      </div>
+      {filteredOrders.length === 0 && searchTerm === '' ? (
         <div className="card" style={{padding:40,textAlign:'center'}}>
           <FiPackage size={48} style={{color:'#d1d5db',marginBottom:16}}/>
           <p style={{color:'#6b7280',fontSize:16,marginBottom:8}}>Bạn chưa có đơn hàng nào</p>
@@ -51,7 +66,7 @@ export default function Orders() {
         </div>
       ) : (
         <div style={{display:'flex',flexDirection:'column',gap:16}}>
-          {data.orders.map((order) => (
+          {filteredOrders.map((order) => (
             <div key={order.order_id} className="card" style={{overflow:'hidden'}}>
               {/* Order Header */}
               <div 

@@ -13,6 +13,7 @@ export default function AdminOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const [expandedOrder, setExpandedOrder] = useState(null);
   const [statusUpdate, setStatusUpdate] = useState({});
 
@@ -47,17 +48,31 @@ export default function AdminOrders() {
   if (loading) return <Loading text="Đang tải đơn hàng..." />;
   if (error) return <div style={{color:'#ef4444',padding:24}}>{error}</div>;
 
+  const filteredOrders = orders.filter(order => 
+    order.order_id.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div>
-      <h2 className="section-title">Quản lý đơn hàng</h2>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:24}}>
+        <h2 className="section-title" style={{margin:0}}>Quản lý đơn hàng</h2>
+        <input
+          type="text"
+          placeholder="TÌm theo mã đơn hàng..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="input"
+          style={{width:250}}
+        />
+      </div>
 
       <div style={{display:'flex',flexDirection:'column',gap:16}}>
-        {orders.length === 0 ? (
+        {filteredOrders.length === 0 ? (
           <div className="card" style={{padding:40,textAlign:'center'}}>
             <p style={{color:'#6b7280',fontSize:16}}>Không có đơn hàng nào</p>
           </div>
         ) : (
-          orders.map((order) => (
+          filteredOrders.map((order) => (
             <div key={order.order_id} className="card" style={{overflow:'hidden'}}>
               <div 
                 style={{

@@ -13,6 +13,7 @@ export default function ProductList() {
   const [data, setData] = useState({ products: [], count: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const { user } = useAuth();
   const { addItem } = useCart();
 
@@ -57,9 +58,24 @@ export default function ProductList() {
   if (loading) return <Loading text="Đang tải sản phẩm..." />;
   if (error) return <div style={{ color: 'red', padding: 24 }}>{error}</div>;
 
+  const filteredProducts = data.products.filter(product =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    product.code.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div>
-      <h2 className="section-title">Sản phẩm</h2>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:24}}>
+        <h2 className="section-title" style={{margin:0}}>Sản phẩm</h2>
+        <input
+          type="text"
+          placeholder="Tìm kiếm sản phẩm..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="input"
+          style={{width:250}}
+        />
+      </div>
       
       {/* Category Filter */}
       <div className="card" style={{marginBottom:24,padding:16}}>
@@ -100,8 +116,8 @@ export default function ProductList() {
 
       {/* Products Grid */}
       <div className="grid">
-        {data.products.length > 0 ? (
-          data.products.map((p) => (
+        {filteredProducts.length > 0 ? (
+          filteredProducts.map((p) => (
             <ProductCard
               key={p.code}
               product={p}

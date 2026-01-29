@@ -23,10 +23,6 @@ export default function Header(){
     <header className="header">
       <div className="container header-inner">
         <Link className="logo" to="/">MiniShop</Link>
-        <form className="search" onSubmit={onSearch}>
-          <input className="input" placeholder="Tìm sản phẩm, danh mục..." value={q} onChange={e=>setQ(e.target.value)} />
-          <button className="btn" type="submit" aria-label="Tìm kiếm"><FiSearch/></button>
-        </form>
         <nav className="nav-actions">
           <Link to="/products">Sản phẩm</Link>
           {user && <Link to="/orders" style={{display:'flex',alignItems:'center',gap:6}}><FiPackage size={18}/>Đơn hàng</Link>}
