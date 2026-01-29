@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { FiChevronDown, FiCheckCircle } from 'react-icons/fi';
-import { getOrders } from '../services/orderService';
+import { getOrders, updateOrderStatus } from '../services/orderService';
 import Loading from '../components/Loading';
 
 const ORDER_STATUSES = ['processing', 'success'];
@@ -22,11 +22,13 @@ export default function AdminOrders() {
 
   const fetchOrders = async () => {
     setLoading(true);
+    setError('');
     try {
       const res = await getOrders({});
       setOrders(res.orders || []);
     } catch (e) {
-      setError(e?.error || 'Lỗi tải đơn hàng');
+      console.error('Order fetch error:', e);
+      setError(e?.response?.data?.error || e?.error || e?.message || 'Lỗi tải đơn hàng');
     } finally {
       setLoading(false);
     }
@@ -34,11 +36,11 @@ export default function AdminOrders() {
 
   const handleStatusUpdate = async (orderId, newStatus) => {
     try {
-      // Call update order status API here when available
+      await updateOrderStatus(orderId, { order_status: newStatus });
       alert('Cập nhật trạng thái thành công!');
       fetchOrders();
     } catch (e) {
-      alert('Lỗi: ' + e.message);
+      alert('Lỗi: ' + (e?.response?.data?.error || e.message));
     }
   };
 

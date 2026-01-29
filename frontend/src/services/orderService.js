@@ -15,3 +15,8 @@ export const createOrder = async (orderData) => {
   const res = await api.put('/orders', orderData);
   return res.data;
 };
+
+export const updateOrderStatus = async (orderId, statusData) => {
+  const res = await api.patch(`/orders/${orderId}`, statusData);
+  return res.data;
+};

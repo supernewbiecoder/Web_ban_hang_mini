@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { FiEdit, FiEye, FiTrash2, FiPlus } from 'react-icons/fi';
-import { getSuppliers, updateSupplier, deleteSupplier } from '../services/supplierService';
+import { getSuppliers, createSupplier, updateSupplier, deleteSupplier } from '../services/supplierService';
 import Loading from '../components/Loading';
 
 export default function AdminSuppliers() {
@@ -10,6 +10,7 @@ export default function AdminSuppliers() {
   const [selectedSupplier, setSelectedSupplier] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [isViewMode, setIsViewMode] = useState(false);
+  const [isCreateMode, setIsCreateMode] = useState(false);
   const [editForm, setEditForm] = useState({});
 
   useEffect(() => {
@@ -39,21 +40,51 @@ export default function AdminSuppliers() {
     setSelectedSupplier(supplier);
     setEditForm({ ...supplier });
     setIsViewMode(false);
+    setIsCreateMode(false);
+    setShowModal(true);
+  };
+
+  const handleCreate = () => {
+    setSelectedSupplier(null);
+    setEditForm({
+      code: '',
+      name: '',
+      phone: '',
+      email: '',
+      address: '',
+      status: 'active'
+    });
+    setIsViewMode(false);
+    setIsCreateMode(true);
     setShowModal(true);
   };
 
   const handleSave = async () => {
     try {
-      const updateData = {
-        name: editForm.name,
-        phone: editForm.phone,
-        email: editForm.email,
-        address: editForm.address,
-        status: editForm.status
-      };
-
-      await updateSupplier(editForm._id, updateData);
-      alert('Cập nhật nhà cung cấp thành công!');
+      if (isCreateMode) {
+        // Create new supplier
+        const createData = {
+          code: editForm.code,
+          name: editForm.name,
+          phone: editForm.phone,
+          email: editForm.email,
+          address: editForm.address,
+          status: editForm.status
+        };
+        await createSupplier(createData);
+        alert('Thêm nhà cung cấp thành công!');
+      } else {
+        // Update existing supplier
+        const updateData = {
+          name: editForm.name,
+          phone: editForm.phone,
+          email: editForm.email,
+          address: editForm.address,
+          status: editForm.status
+        };
+        await updateSupplier(editForm._id, updateData);
+        alert('Cập nhật nhà cung cấp thành công!');
+      }
       setShowModal(false);
       fetchSuppliers();
     } catch (e) {
@@ -80,7 +111,7 @@ export default function AdminSuppliers() {
     <div>
       <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:24}}>
         <h2 className="section-title" style={{margin:0}}>Quản lý nhà cung cấp</h2>
-        <button className="btn" style={{display:'flex',alignItems:'center',gap:8}}>
+        <button className="btn" onClick={handleCreate} style={{display:'flex',alignItems:'center',gap:8}}>
           <FiPlus/> Thêm nhà cung cấp
         </button>
       </div>
@@ -170,7 +201,7 @@ export default function AdminSuppliers() {
           <div className="card" style={{maxWidth:700,width:'90%',maxHeight:'85vh',overflowY:'auto',padding:32}}>
             <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:24}}>
               <h2 style={{margin:0,fontSize:24}}>
-                {isViewMode ? '👁️ Xem chi tiết nhà cung cấp' : '✏️ Sửa nhà cung cấp'}
+                {isCreateMode ? '➡️ Thêm nhà cung cấp mới' : isViewMode ? '👁️ Xem chi tiết nhà cung cấp' : '✏️ Sửa nhà cung cấp'}
               </h2>
               {isViewMode && (
                 <button 
@@ -186,10 +217,12 @@ export default function AdminSuppliers() {
             <div style={{marginBottom:16}}>
               <label style={{display:'block',marginBottom:8,fontWeight:600,color:'#374151'}}>Mã nhà cung cấp</label>
               <input 
-                disabled 
+                disabled={!isCreateMode}
                 className="input" 
                 value={editForm.code || ''} 
-                style={{background:'#f9fafb',cursor:'not-allowed'}}
+                onChange={(e) => setEditForm({...editForm, code: e.target.value})}
+                style={!isCreateMode ? {background:'#f9fafb',cursor:'not-allowed'} : {}}
+                placeholder={isCreateMode ? "VD: SUP001" : ""}
               />
             </div>
 
@@ -280,7 +313,7 @@ export default function AdminSuppliers() {
             <div style={{display:'flex',gap:12}}>
               {!isViewMode && (
                 <button className="btn" onClick={handleSave} style={{flex:1}}>
-                  💾 Lưu thay đổi
+                  {isCreateMode ? '➕ Thêm nhà cung cấp' : '💾 Lưu thay đổi'}
                 </button>
               )}
               <button 

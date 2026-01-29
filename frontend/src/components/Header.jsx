@@ -2,7 +2,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useMemo, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
-import { FiShoppingCart, FiSearch, FiLogOut } from 'react-icons/fi';
+import { FiShoppingCart, FiSearch, FiLogOut, FiPackage } from 'react-icons/fi';
 
 export default function Header(){
   const { user, logout } = useAuth();
@@ -29,6 +29,7 @@ export default function Header(){
         </form>
         <nav className="nav-actions">
           <Link to="/products">Sản phẩm</Link>
+          {user && <Link to="/orders" style={{display:'flex',alignItems:'center',gap:6}}><FiPackage size={18}/>Đơn hàng</Link>}
           <div className="badge">
             <Link to="/cart" title="Giỏ hàng"><FiShoppingCart size={22}/></Link>
             <span className="count">{count}</span>

@@ -13,11 +13,9 @@ def get_order_filter_request(request):
     """Lấy filter từ request query parameters."""
     order_id = request.args.get("order_id")
     customer_id = request.args.get("customer_id")
-    shipping_address = request.args.get("shipping_address")
     payment_method = request.args.get("payment_method")
     payment_status = request.args.get("payment_status")
     order_status = request.args.get("order_status")
-    note = request.args.get("note")
     
     # Xử lý start/num an toàn
     try:
@@ -33,11 +31,11 @@ def get_order_filter_request(request):
     filter_obj = Order_filter(
         order_id=order_id,
         customer_id=customer_id,
-        shipping_address=shipping_address,
+        shipping_address=None,
         payment_method=payment_method,
         payment_status=payment_status,
         order_status=order_status,
-        note=note,
+        note=None,
         start=start,
         num=num
     )

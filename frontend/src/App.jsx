@@ -8,12 +8,12 @@ import ProductList from './pages/ProductList';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import Orders from './pages/Orders';
+import AdminOrders from './pages/AdminOrders';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import PrivateRoute from './components/PrivateRoute';
 import AdminRoute from './components/AdminRoute';
 import AdminProducts from './pages/AdminProducts';
-import AdminOrders from './pages/AdminOrders';
 import AdminSuppliers from './pages/AdminSuppliers';
 
 function UserLayout({ children }) {
@@ -36,8 +36,21 @@ function AdminLayoutWrapper({ children }) {
   );
 }
 
+// Wrapper component để hiển thị orders page khác nhau dựa trên role
+function OrdersPageWrapper() {
+  const { user } = useAuth();
+  
+  if (user?.role === 'admin') {
+    return <AdminLayoutWrapper><AdminOrders /></AdminLayoutWrapper>;
+  }
+  
+  return <UserLayout><Orders /></UserLayout>;
+}
+
 export default function App() {
   const { user } = useAuth();
+  
+  console.log('Current user:', user); // Debug
 
   return (
     <Routes>
@@ -47,9 +60,7 @@ export default function App() {
           <Route path="/" element={<AdminLayoutWrapper><AdminProducts /></AdminLayoutWrapper>} />
           <Route path="/admin/products" element={<AdminLayoutWrapper><AdminProducts /></AdminLayoutWrapper>} />
           <Route path="/admin/suppliers" element={<AdminLayoutWrapper><AdminSuppliers /></AdminLayoutWrapper>} />
-          <Route path="/admin/orders" element={<AdminLayoutWrapper><AdminOrders /></AdminLayoutWrapper>} />
           <Route path="/products" element={<AdminLayoutWrapper><AdminProducts /></AdminLayoutWrapper>} />
-          <Route path="/orders" element={<AdminLayoutWrapper><AdminOrders /></AdminLayoutWrapper>} />
         </>
       )}
 
@@ -61,9 +72,13 @@ export default function App() {
           <Route path="/cart" element={<UserLayout><Cart /></UserLayout>} />
           <Route element={<UserLayout><PrivateRoute /></UserLayout>}>
             <Route path="/checkout" element={<Checkout />} />
-            <Route path="/orders" element={<Orders />} />
           </Route>
         </>
+      )}
+
+      {/* Shared Routes (both user and admin) */}
+      {user && (
+        <Route path="/orders" element={<OrdersPageWrapper />} />
       )}
 
       {/* Auth Routes (always available) */}

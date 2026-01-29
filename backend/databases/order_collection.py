@@ -50,3 +50,16 @@ class OrderRepository:
         """Delete one order by order_id."""
         result = self.order.delete_one({"order_id": order_id})
         return result.deleted_count > 0
+    
+    def update_order(self, order_id: str, update_data: Dict) -> bool:
+        """Update order by order_id."""
+        if not update_data:
+            return False
+        try:
+            result = self.order.update_one(
+                {"order_id": order_id},
+                {"$set": update_data}
+            )
+            return result.modified_count > 0
+        except Exception:
+            return False

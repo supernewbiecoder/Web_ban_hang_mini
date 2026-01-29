@@ -67,7 +67,7 @@ export default function Cart() {
               Xóa toàn bộ
             </button>
             <Link to="/checkout" className="btn" style={{textDecoration:'none',fontSize:16,padding:'12px 32px'}}>
-              Thanh toán
+              Đặt hàng
             </Link>
           </div>
         </>

@@ -22,7 +22,7 @@ export default function AdminHeader() {
             <FiTruck size={20}/>
             Nhà cung cấp
           </Link>
-          <Link to="/admin/orders" style={{color:'#fff',display:'flex',alignItems:'center',gap:6}}>
+          <Link to="/orders" style={{color:'#fff',display:'flex',alignItems:'center',gap:6}}>
             <FiShoppingCart size={20}/>
             Đơn hàng
           </Link>

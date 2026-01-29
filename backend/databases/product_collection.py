@@ -103,3 +103,14 @@ class ProductRepository:
 
         self.product.delete_one({"code": code})
         return product
+
+    def decrease_quantity(self, code: str, quantity: int) -> bool:
+        """Decrease product quantity by given amount."""
+        if quantity <= 0:
+            return True
+        
+        result = self.product.update_one(
+            {"code": code},
+            {"$inc": {"total_quantity": -quantity}}
+        )
+        return result.modified_count > 0

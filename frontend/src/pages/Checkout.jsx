@@ -8,9 +8,18 @@ export default function Checkout() {
   const { cart, clear } = useCart();
   const navigate = useNavigate();
   const [form, setForm] = useState({ receiver_name: '', phone: '', full_address: '' });
+  const [paymentMethod, setPaymentMethod] = useState('cod');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const handlePaymentMethodChange = (method) => {
+    if (method !== 'cod') {
+      alert('🚀 Phương thức thanh toán này đang trong quá trình phát triển. Vui lòng chọn COD!');
+      return;
+    }
+    setPaymentMethod(method);
+  };
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -34,7 +43,7 @@ export default function Checkout() {
           phone: form.phone,
           full_address: form.full_address,
         },
-        payment_method: 'cod',
+        payment_method: paymentMethod,
         note: '',
       };
 
@@ -52,7 +61,7 @@ export default function Checkout() {
 
   return (
     <div>
-      <h2 className="section-title">Thanh toán</h2>
+      <h2 className="section-title">Đặt hàng</h2>
       <div style={{maxWidth:520,margin:'0 auto'}}>
         <form onSubmit={onSubmit} className="form" style={{marginBottom:24}}>
           <div style={{marginBottom:16}}>
@@ -91,6 +100,103 @@ export default function Checkout() {
               required
               rows="4"
             />
+          </div>
+          <div style={{marginBottom:24}}>
+            <label style={{display:'block',marginBottom:8,fontWeight:600,color:'#374151',fontSize:14}}>
+              Phương thức thanh toán
+            </label>
+            <div style={{display:'flex',flexDirection:'column',gap:12}}>
+              <label style={{
+                display:'flex',
+                alignItems:'center',
+                padding:'12px 16px',
+                border:'2px solid',
+                borderColor:paymentMethod === 'cod' ? '#667eea' : '#e5e7eb',
+                borderRadius:8,
+                cursor:'pointer',
+                background:paymentMethod === 'cod' ? '#f5f3ff' : '#fff',
+                transition:'all 0.2s'
+              }}>
+                <input 
+                  type="radio" 
+                  name="payment" 
+                  value="cod"
+                  checked={paymentMethod === 'cod'}
+                  onChange={(e)=>handlePaymentMethodChange(e.target.value)}
+                  style={{marginRight:12,width:18,height:18,cursor:'pointer'}}
+                />
+                <div>
+                  <div style={{fontWeight:600,color:'#1f2937'}}>💵 Thanh toán khi nhận hàng (COD)</div>
+                  <div style={{fontSize:13,color:'#6b7280',marginTop:2}}>Thanh toán bằng tiền mặt khi nhận hàng</div>
+                </div>
+              </label>
+              <label style={{
+                display:'flex',
+                alignItems:'center',
+                padding:'12px 16px',
+                border:'2px solid #e5e7eb',
+                borderRadius:8,
+                cursor:'pointer',
+                background:'#f9fafb',
+                opacity:0.6
+              }}>
+                <input 
+                  type="radio" 
+                  name="payment" 
+                  value="momo"
+                  onChange={(e)=>handlePaymentMethodChange(e.target.value)}
+                  style={{marginRight:12,width:18,height:18,cursor:'pointer'}}
+                />
+                <div>
+                  <div style={{fontWeight:600,color:'#1f2937'}}>📱 MoMo</div>
+                  <div style={{fontSize:13,color:'#6b7280',marginTop:2}}>Đang phát triển</div>
+                </div>
+              </label>
+              <label style={{
+                display:'flex',
+                alignItems:'center',
+                padding:'12px 16px',
+                border:'2px solid #e5e7eb',
+                borderRadius:8,
+                cursor:'pointer',
+                background:'#f9fafb',
+                opacity:0.6
+              }}>
+                <input 
+                  type="radio" 
+                  name="payment" 
+                  value="vnpay"
+                  onChange={(e)=>handlePaymentMethodChange(e.target.value)}
+                  style={{marginRight:12,width:18,height:18,cursor:'pointer'}}
+                />
+                <div>
+                  <div style={{fontWeight:600,color:'#1f2937'}}>💳 VNPay</div>
+                  <div style={{fontSize:13,color:'#6b7280',marginTop:2}}>Đang phát triển</div>
+                </div>
+              </label>
+              <label style={{
+                display:'flex',
+                alignItems:'center',
+                padding:'12px 16px',
+                border:'2px solid #e5e7eb',
+                borderRadius:8,
+                cursor:'pointer',
+                background:'#f9fafb',
+                opacity:0.6
+              }}>
+                <input 
+                  type="radio" 
+                  name="payment" 
+                  value="banking"
+                  onChange={(e)=>handlePaymentMethodChange(e.target.value)}
+                  style={{marginRight:12,width:18,height:18,cursor:'pointer'}}
+                />
+                <div>
+                  <div style={{fontWeight:600,color:'#1f2937'}}>🏦 Chuyển khoản ngân hàng</div>
+                  <div style={{fontSize:13,color:'#6b7280',marginTop:2}}>Đang phát triển</div>
+                </div>
+              </label>
+            </div>
           </div>
           <button 
             className="btn" 
