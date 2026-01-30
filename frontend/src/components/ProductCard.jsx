@@ -1,10 +1,15 @@
 import { FiShoppingCart } from 'react-icons/fi';
 
 export default function ProductCard({ product, onAdd }){
+  const imageUrl = product.image_url || product.imageUrl || product.thumbnail || product.image;
   return (
     <div className="card product-card">
       <div className="product-thumb">
-        <span style={{color:'#bbb', fontSize:14, fontWeight:500}}>📦 No Image</span>
+        {imageUrl ? (
+          <img src={imageUrl} alt={product.name} loading="lazy" />
+        ) : (
+          <span style={{color:'#bbb', fontSize:14, fontWeight:500}}>📦 No Image</span>
+        )}
       </div>
       <div className="product-body">
         <h4 className="product-name" title={product.name}>{product.name}</h4>

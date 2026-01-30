@@ -55,7 +55,13 @@ def seed_products(product_repo: ProductRepository, products_data: list):
             count += 1
             print(f"  ✓ Product '{product_data['code']}' created")
         except ValueError as e:
-            print(f"  ⚠️  {str(e)}")
+            # Nếu đã tồn tại thì cập nhật lại dữ liệu (bao gồm image_url)
+            try:
+                product_repo.update_product(product_data.get("code"), product_data)
+                print(f"  ↻ Product '{product_data['code']}' updated")
+            except Exception as update_err:
+                print(f"  ⚠️  {str(e)}")
+                print(f"  ❌ Error updating product: {str(update_err)}")
         except Exception as e:
             print(f"  ❌ Error creating product: {str(e)}")
     print(f"✅ Seeded {count}/{len(products_data)} products\n")

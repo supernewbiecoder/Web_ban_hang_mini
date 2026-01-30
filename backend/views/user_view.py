@@ -8,6 +8,7 @@ def product_list_view(products_data):
                 "code": product.get("code"),
                 "category": product.get("category"),
                 "sell_price": product.get("sell_price"),
+                "image_url": product.get("image_url", ""),
                 "total_quantity": product.get("total_quantity")
             })
     return result

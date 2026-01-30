@@ -47,6 +47,7 @@ body{margin:0;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Se
 .product-card{overflow:hidden;cursor:pointer;border:1px solid #f0f0f0}
 .product-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg);border-color:var(--primary)}
 .product-thumb{height:200px;background:linear-gradient(135deg, #fafafa 0%, #f0f0f0 100%);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.product-thumb img{width:100%;height:100%;object-fit:cover;display:block}
 .product-thumb::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg, transparent, rgba(255,255,255,.5), transparent);transition:left 0.5s}
 .product-card:hover .product-thumb::before{left:100%}
 .product-body{padding:16px}

@@ -12,6 +12,7 @@ class Product:
         sell_price: float,
         import_price: float,
         description: str = "",
+        image_url: str = "",
         total_quantity: int = 0,
         status: str = "active",
         created_at: Optional[datetime] = None,
@@ -26,6 +27,7 @@ class Product:
         self.sell_price = sell_price
         self.import_price = import_price
         self.description = description
+        self.image_url = image_url
         self.total_quantity = total_quantity
         self.status = status
         self.created_at = created_at
@@ -44,6 +46,7 @@ class Product:
             "sell_price": self.sell_price,
             "import_price": self.import_price,
             "description": self.description,
+            "image_url": self.image_url,
             "total_quantity": self.total_quantity,
             "status": self.status,
             "created_at": _dt(self.created_at),
@@ -61,6 +64,7 @@ class Product:
             sell_price=data.get("sell_price", 0),
             import_price=data.get("import_price", 0),
             description=data.get("description", ""),
+            image_url=data.get("image_url", ""),
             total_quantity=data.get("total_quantity", 0),
             status=data.get("status", "active"),
             created_at=data.get("created_at"),
@@ -78,6 +82,7 @@ create_product_schema = {
         "sell_price": {"type": "number", "minimum": 0},
         "import_price": {"type": "number", "minimum": 0},
         "description": {"type": "string"},
+        "image_url": {"type": "string"},
         "total_quantity": {"type": "integer", "minimum": 0},
         "status": {
             "type": "string",
@@ -108,6 +113,7 @@ update_product_schema = {
         "sell_price": {"type": "number", "minimum": 0},
         "import_price": {"type": "number", "minimum": 0},
         "description": {"type": "string"},
+        "image_url": {"type": "string"},
         "total_quantity": {"type": "integer", "minimum": 0},
         "status": {"type": "string", "enum": [enum.Product_Status.ACTIVE, enum.Product_Status.INACTIVE]},
     },
