@@ -94,8 +94,16 @@ async def bp_create_order(request):
             product = product_repo.get_product_by_code(product_id)
             if not product:
                 return json({"error": f"Sản phẩm với product_id {product_id} không tồn tại"}, status=400)
-            else:
-                total_price += product.get("sell_price") * item.get("quantity")
+            
+            # Kiểm tra số lượng tồn kho
+            available_qty = product.get("total_quantity", 0)
+            requested_qty = item.get("quantity", 0)
+            if requested_qty > available_qty:
+                return json({
+                    "error": f"Sản phẩm '{product.get('name')}' chỉ còn {available_qty} sản phẩm, bạn yêu cầu {requested_qty}. Vui lòng điều chỉnh số lượng."
+                }, status=400)
+            
+            total_price += product.get("sell_price") * item.get("quantity")
         
         order_data["price"] = round(total_price, 2)
 
