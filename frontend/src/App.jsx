@@ -5,6 +5,7 @@ import AdminHeader from './components/AdminHeader';
 import Footer from './components/Footer';
 import Home from './pages/Home';
 import ProductList from './pages/ProductList';
+import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import Orders from './pages/Orders';
@@ -69,6 +70,7 @@ export default function App() {
         <>
           <Route path="/" element={<UserLayout><Home /></UserLayout>} />
           <Route path="/products" element={<UserLayout><ProductList /></UserLayout>} />
+          <Route path="/product/:productCode" element={<UserLayout><ProductDetail /></UserLayout>} />
           <Route path="/cart" element={<UserLayout><Cart /></UserLayout>} />
           <Route element={<UserLayout><PrivateRoute /></UserLayout>}>
             <Route path="/checkout" element={<Checkout />} />

@@ -14,11 +14,12 @@ export default function ProductList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [notification, setNotification] = useState('');
   const { user } = useAuth();
   const { addItem } = useCart();
+  const navigate = useNavigate();
 
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
 
   const fetchData = async () => {
     setLoading(true);
@@ -53,6 +54,11 @@ export default function ProductList() {
     navigate(`/products?${params.toString()}`);
   };
 
+  const handleNotLoggedIn = () => {
+    setNotification('Vui lòng đăng nhập để mua hàng');
+    setTimeout(() => setNotification(''), 3000);
+  };
+
   const selectedCategory = searchParams.get('category');
 
   if (loading) return <Loading text="Đang tải sản phẩm..." />;
@@ -65,6 +71,21 @@ export default function ProductList() {
 
   return (
     <div>
+      {notification && (
+        <div style={{
+          background: '#fef2f2',
+          border: '1px solid #fecaca',
+          color: '#dc2626',
+          padding: '12px 16px',
+          borderRadius: '8px',
+          marginBottom: '16px',
+          fontSize: '14px',
+          fontWeight: '500'
+        }}>
+          ⚠️ {notification}
+        </div>
+      )}
+      
       <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:24}}>
         <h2 className="section-title" style={{margin:0}}>Sản phẩm</h2>
         <input
@@ -76,8 +97,6 @@ export default function ProductList() {
           style={{width:250}}
         />
       </div>
-      
-      {/* Category Filter */}
       <div className="card" style={{marginBottom:24,padding:16}}>
         <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:12}}>
           <FiFilter size={20} style={{color:'#ee4d2d'}}/>
@@ -121,7 +140,8 @@ export default function ProductList() {
             <ProductCard
               key={p.code}
               product={p}
-              onAdd={() => user ? addItem({ product_id: p.code, product_name: p.name, price: p.sell_price, quantity: 1 }) : null}
+              onAdd={() => addItem({ product_id: p.code, product_name: p.name, price: p.sell_price, quantity: 1 })}
+              requireLogin={user ? null : handleNotLoggedIn}
             />
           ))
         ) : (
