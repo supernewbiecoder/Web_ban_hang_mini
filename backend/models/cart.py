@@ -2,31 +2,6 @@ from datetime import datetime
 from typing import Dict, List, Optional
 
 
-class CartItem:
-    """Đại diện một item trong giỏ hàng"""
-    def __init__(self, 
-                 product_id: str,
-                 product_name: str,
-                 price: float,
-                 quantity: int,
-                 image_url: str = ""):
-        self.product_id = product_id
-        self.product_name = product_name
-        self.price = price
-        self.quantity = quantity
-        self.image_url = image_url
-        
-    def to_dict(self) -> Dict:
-        return {
-            "product_id": self.product_id,
-            "product_name": self.product_name,
-            "price": self.price,
-            "quantity": self.quantity,
-            "image_url": self.image_url,
-            "subtotal": round(self.price * self.quantity, 2)
-        }
-
-
 class Cart:
     """Đại diện giỏ hàng của một user"""
     def __init__(self,
