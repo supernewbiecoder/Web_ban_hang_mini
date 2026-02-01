@@ -1,5 +1,4 @@
 import AdminHeader from './AdminHeader';
-import Footer from './Footer';
 
 export default function AdminLayout({ children }) {
   return (
@@ -8,7 +7,6 @@ export default function AdminLayout({ children }) {
       <main className="container section">
         {children}
       </main>
-      <Footer />
     </div>
   );
 }

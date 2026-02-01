@@ -2,7 +2,6 @@ import { Routes, Route } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import Header from './components/Header';
 import AdminHeader from './components/AdminHeader';
-import Footer from './components/Footer';
 import Home from './pages/Home';
 import ProductList from './pages/ProductList';
 import ProductDetail from './pages/ProductDetail';
@@ -22,7 +21,6 @@ function UserLayout({ children }) {
     <div>
       <Header />
       <main className="container section">{children}</main>
-      <Footer />
     </div>
   );
 }
@@ -32,7 +30,6 @@ function AdminLayoutWrapper({ children }) {
     <div>
       <AdminHeader />
       <main className="container section">{children}</main>
-      <Footer />
     </div>
   );
 }
