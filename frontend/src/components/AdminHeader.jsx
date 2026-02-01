@@ -5,6 +5,10 @@ import { FiLogOut, FiPackage, FiShoppingCart, FiHome, FiTruck } from 'react-icon
 export default function AdminHeader() {
   const { user, logout } = useAuth();
 
+  const handleLogout = () => {
+    logout();
+  }
+
   return (
     <header className="header" style={{background:'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}}>
       <div className="container header-inner">
@@ -29,7 +33,7 @@ export default function AdminHeader() {
           <span style={{color:'#fff'}}>Hi, {user?.username}</span>
           <button 
             className="btn" 
-            onClick={logout} 
+            onClick={handleLogout} 
             title="Đăng xuất"
             style={{background:'rgba(255,255,255,.2)',color:'#fff',border:'1px solid rgba(255,255,255,.5)',display:'flex',alignItems:'center',gap:6}}
           >
